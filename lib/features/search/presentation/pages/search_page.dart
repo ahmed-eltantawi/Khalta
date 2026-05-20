@@ -104,21 +104,47 @@ class _SearchPageState extends State<SearchPage> {
                             controller: _searchController,
                             focusNode: _focusNode,
                             onChanged: (q) {
+                              // If the user types a comma, extract the text
+                              // before it and add as a chip
+                              if (q.contains(',')) {
+                                final parts = q
+                                    .split(',')
+                                    .map((s) => s.trim())
+                                    .where((s) => s.isNotEmpty)
+                                    .toList();
+                                if (parts.isNotEmpty) {
+                                  _searchController.clear();
+                                  setState(() {});
+                                  context.read<SearchBloc>().add(
+                                      SearchQueryChanged(
+                                          parts.join(',')));
+                                  _focusNode.requestFocus();
+                                  return;
+                                }
+                              }
                               setState(() {});
                               context
                                   .read<SearchBloc>()
                                   .add(SearchQueryChanged(q));
                             },
                             onSubmitted: (q) {
-                              if (q.trim().isNotEmpty) {
+                              if (q.trim().isEmpty) return;
+                              // Support comma-separated submission
+                              if (q.contains(',')) {
+                                _searchController.clear();
+                                setState(() {});
+                                context.read<SearchBloc>().add(
+                                    SearchQueryChanged(q.trim()));
+                              } else {
                                 context
                                     .read<SearchBloc>()
                                     .add(SearchQueryChanged(q.trim()));
                               }
+                              _focusNode.requestFocus();
                             },
                             style: TextStyle(color: AppTheme.textP(context)),
                             decoration: InputDecoration(
-                              hintText: 'Add ingredient to filter…',
+                              hintText: 'Search ingredients (comma-separated)…',
                               prefixIcon: Icon(Icons.search_rounded,
                                   color: AppTheme.textH(context)),
                               suffixIcon: _searchController.text.isNotEmpty

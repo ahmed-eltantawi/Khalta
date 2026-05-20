@@ -65,6 +65,14 @@ class DismissSuggestions extends SearchEvent {
   const DismissSuggestions();
 }
 
+/// Adds multiple ingredients at once (e.g. from comma-separated input).
+class MultipleIngredientsAdded extends SearchEvent {
+  final List<String> ingredients;
+  const MultipleIngredientsAdded(this.ingredients);
+  @override
+  List<Object?> get props => [ingredients];
+}
+
 // ─── States ───────────────────────────────────────────────────────────────────
 
 abstract class SearchState extends Equatable {
@@ -177,6 +185,7 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
     on<SearchQueryChanged>(_onSearchQueryChanged);
     on<IngredientChipAdded>(_onIngredientChipAdded);
     on<IngredientChipRemoved>(_onIngredientChipRemoved);
+    on<MultipleIngredientsAdded>(_onMultipleIngredientsAdded);
     on<CategoryFilterSelected>(_onCategoryFilter);
     on<AreaFilterSelected>(_onAreaFilter);
     on<ClearFiltersEvent>(_onClearFilters);
@@ -255,6 +264,48 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
       return;
     }
 
+    // ── Comma-separated multi-ingredient input ──────────────────────────
+    // If the user types something like "chicken, tomato" we detect the comma
+    // and add each segment as a chip.
+    if (q.contains(',')) {
+      final parts = q
+          .split(',')
+          .map((s) => s.trim())
+          .where((s) => s.isNotEmpty)
+          .toList();
+
+      final matched = <String>[];
+      for (final part in parts) {
+        final lower = part.toLowerCase();
+        // Try to find an exact or close match in the known ingredients list
+        final match = _allIngredients.firstWhere(
+          (ing) => ing.toLowerCase() == lower,
+          orElse: () => _allIngredients.firstWhere(
+            (ing) => ing.toLowerCase().startsWith(lower),
+            orElse: () => '',
+          ),
+        );
+        if (match.isNotEmpty && !_selectedIngredients.contains(match) && !matched.contains(match)) {
+          matched.add(match);
+        } else if (match.isEmpty && part.isNotEmpty) {
+          // Even if not in the known list, add as-is (the API might still find results)
+          if (!_selectedIngredients.contains(part) && !matched.contains(part)) {
+            matched.add(part);
+          }
+        }
+      }
+
+      if (matched.isNotEmpty) {
+        for (final ing in matched) {
+          if (!_selectedIngredients.contains(ing)) {
+            _selectedIngredients = [..._selectedIngredients, ing];
+          }
+        }
+        await _searchBySelectedIngredients(emit);
+        return;
+      }
+    }
+
     // Filter ingredient list (exclude already-selected ones)
     if (_allIngredients.isNotEmpty) {
       final lower = q.toLowerCase();
@@ -295,6 +346,22 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
     } catch (e) {
       emit(SearchError(e.toString(),
           selectedIngredients: _selectedIngredients));
+    }
+  }
+
+  Future<void> _onMultipleIngredientsAdded(
+    MultipleIngredientsAdded event,
+    Emitter<SearchState> emit,
+  ) async {
+    bool added = false;
+    for (final ingredient in event.ingredients) {
+      if (!_selectedIngredients.contains(ingredient)) {
+        _selectedIngredients = [..._selectedIngredients, ingredient];
+        added = true;
+      }
+    }
+    if (added && _selectedIngredients.isNotEmpty) {
+      await _searchBySelectedIngredients(emit);
     }
   }
 

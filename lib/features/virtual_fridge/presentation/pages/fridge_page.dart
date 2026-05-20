@@ -83,7 +83,10 @@ class _FridgePageState extends State<FridgePage> with SingleTickerProviderStateM
                 controller: _tabController,
                 children: [
                   _ItemsTab(onAdd: () => _showAddDialog(context)),
-                  _ScanPhotoTab(onIngredientAdded: () => _tabController.animateTo(0)),
+                  BlocProvider(
+                    create: (_) => sl<CameraCubit>(),
+                    child: _ScanPhotoTab(onIngredientAdded: () => _tabController.animateTo(0)),
+                  ),
                 ],
               ),
             ),
@@ -225,131 +228,275 @@ class _ScanPhotoTab extends StatefulWidget {
 
 class _ScanPhotoTabState extends State<_ScanPhotoTab> {
   final ImagePicker _picker = ImagePicker();
-  File? _selectedImage;
-  List<String> _detectedIngredients = [];
-  bool _scanning = false;
 
   Future<void> _pickImage(ImageSource source) async {
     final picked = await _picker.pickImage(source: source, maxWidth: 1024);
     if (picked == null) return;
-    setState(() { _selectedImage = File(picked.path); _detectedIngredients = []; });
-    _scanImage(picked.path);
-  }
-
-  Future<void> _scanImage(String path) async {
-    setState(() => _scanning = true);
-    try {
-      final cubit = sl<CameraCubit>();
-      await cubit.scanImage(path);
-      if (cubit.state is CameraIngredientsDetected) {
-        setState(() => _detectedIngredients = (cubit.state as CameraIngredientsDetected).ingredients);
-      } else {
-        setState(() => _detectedIngredients = []);
-      }
-    } catch (_) {
-      setState(() => _detectedIngredients = []);
+    if (mounted) {
+      context.read<CameraCubit>().scanImage(picked.path);
     }
-    setState(() => _scanning = false);
   }
 
-  void _addIngredient(String name) {
+  void _addToFridge(String name) {
     final item = FridgeItemEntity(
-      id: const Uuid().v4(), name: name, quantity: '1', unit: 'piece',
-      expiryDate: null, addedAt: DateTime.now(),
+      id: const Uuid().v4(),
+      name: name,
+      quantity: '1',
+      unit: 'piece',
+      expiryDate: null,
+      addedAt: DateTime.now(),
     );
     context.read<FridgeBloc>().add(AddFridgeItemEvent(item));
-    setState(() => _detectedIngredients.remove(name));
-    AppSnackBar.showSuccess(context, '$name added to fridge!');
-    if (_detectedIngredients.isEmpty) widget.onIngredientAdded();
   }
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return BlocConsumer<CameraCubit, CameraCubitState>(
+      listener: (context, state) {
+        if (state is CameraConfirmationComplete) {
+          if (state.acceptedIngredients.isNotEmpty) {
+            AppSnackBar.showSuccess(context,
+                '${state.acceptedIngredients.length} ingredient(s) added to fridge!');
+          }
+          context.read<CameraCubit>().reset();
+          // Reload fridge and switch to items tab
+          context.read<FridgeBloc>().add(const LoadFridgeEvent());
+          widget.onIngredientAdded();
+        } else if (state is CameraError) {
+          AppSnackBar.showError(context, state.message);
+          context.read<CameraCubit>().reset();
+        }
+      },
+      builder: (context, state) {
+        if (state is CameraScanning) {
+          return const Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CircularProgressIndicator(color: AppTheme.primary),
+                SizedBox(height: 12),
+                Text('Analyzing image…',
+                    style: TextStyle(color: AppTheme.textSecondary)),
+              ],
+            ),
+          );
+        }
+
+        if (state is CameraIngredientConfirmation) {
+          return _buildConfirmationView(context, state, isDark);
+        }
+
+        // Idle state — show pick buttons
+        return SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: _PickButton(
+                      icon: Icons.camera_alt_rounded,
+                      label: 'Take Photo',
+                      onTap: () => _pickImage(ImageSource.camera),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _PickButton(
+                      icon: Icons.photo_library_rounded,
+                      label: 'Gallery',
+                      onTap: () => _pickImage(ImageSource.gallery),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Padding(
+                padding: const EdgeInsets.all(40),
+                child: Column(
+                  children: [
+                    const Text('📸', style: TextStyle(fontSize: 56)),
+                    const SizedBox(height: 16),
+                    Text('Scan your ingredients',
+                        style: TextStyle(
+                            color: AppTheme.textP(context),
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600)),
+                    const SizedBox(height: 8),
+                    Text(
+                        'Take a photo or pick from gallery\nto auto-detect ingredients',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            color: AppTheme.textS(context), height: 1.5)),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildConfirmationView(
+      BuildContext context, CameraIngredientConfirmation state, bool isDark) {
+    final stepNumber = state.accepted.length + 1;
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
-      child: Column(children: [
-        // Pick buttons
-        Row(children: [
-          Expanded(child: _PickButton(
-            icon: Icons.camera_alt_rounded, label: 'Take Photo',
-            onTap: () => _pickImage(ImageSource.camera),
-          )),
-          const SizedBox(width: 12),
-          Expanded(child: _PickButton(
-            icon: Icons.photo_library_rounded, label: 'Gallery',
-            onTap: () => _pickImage(ImageSource.gallery),
-          )),
-        ]),
-        const SizedBox(height: 16),
+      child: Column(
+        children: [
+          // Progress indicator
+          if (state.totalDetected > 1)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Item $stepNumber of ${state.totalDetected}',
+                        style: TextStyle(
+                            color: AppTheme.textS(context),
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500),
+                      ),
+                      if (state.accepted.isNotEmpty)
+                        Text(
+                          '${state.accepted.length} added',
+                          style: const TextStyle(
+                              color: AppTheme.success,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600),
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: 6),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(4),
+                    child: LinearProgressIndicator(
+                      value: stepNumber / state.totalDetected,
+                      backgroundColor: AppTheme.border(context),
+                      valueColor: const AlwaysStoppedAnimation<Color>(
+                          AppTheme.primary),
+                      minHeight: 4,
+                    ),
+                  ),
+                ],
+              ),
+            ),
 
-        // Selected image preview
-        if (_selectedImage != null)
+          // Image preview
           ClipRRect(
             borderRadius: BorderRadius.circular(16),
-            child: Image.file(_selectedImage!, height: 200, width: double.infinity, fit: BoxFit.cover),
+            child: Image.file(File(state.imagePath),
+                height: 160, width: double.infinity, fit: BoxFit.cover),
           ).animate().fadeIn(duration: 300.ms),
 
-        if (_scanning)
-          const Padding(
-            padding: EdgeInsets.all(32),
-            child: Column(children: [
-              CircularProgressIndicator(color: AppTheme.primary),
-              SizedBox(height: 12),
-              Text('Analyzing image...', style: TextStyle(color: AppTheme.textSecondary)),
-            ]),
-          ),
+          const SizedBox(height: 24),
 
-        // Detected ingredients
-        if (_detectedIngredients.isNotEmpty) ...[
-          const SizedBox(height: 16),
-          Text('Detected Ingredients', style: TextStyle(color: AppTheme.textP(context), fontSize: 16, fontWeight: FontWeight.w600)),
-          const SizedBox(height: 8),
-          ...List.generate(_detectedIngredients.length, (i) {
-            final name = _detectedIngredients[i];
-            return Container(
-              margin: const EdgeInsets.only(bottom: 8),
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-              decoration: BoxDecoration(
-                color: AppTheme.card(context),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppTheme.border(context), width: 0.5),
-              ),
-              child: Row(children: [
-                Icon(Icons.kitchen_rounded, color: AppTheme.primary, size: 20),
-                const SizedBox(width: 10),
-                Expanded(child: Text(name, style: TextStyle(color: AppTheme.textP(context), fontSize: 14, fontWeight: FontWeight.w500))),
-                IconButton(
-                  icon: const Icon(Icons.add_circle_rounded, color: AppTheme.success),
-                  onPressed: () => _addIngredient(name),
+          // "I see a X" card
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: AppTheme.card(context),
+              borderRadius: BorderRadius.circular(20),
+              border:
+                  Border.all(color: AppTheme.border(context), width: 0.5),
+            ),
+            child: Column(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: Image.network(
+                    ApiConstants.ingredientImageUrl(
+                        state.currentIngredient),
+                    width: 56,
+                    height: 56,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => Container(
+                      width: 56,
+                      height: 56,
+                      decoration: BoxDecoration(
+                        color: AppTheme.primary.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Icon(Icons.eco_rounded,
+                          size: 28, color: AppTheme.primary),
+                    ),
+                  ),
                 ),
-              ]),
-            ).animate(delay: Duration(milliseconds: i * 60)).fadeIn(duration: 300.ms).slideX(begin: 0.05);
-          }),
+                const SizedBox(height: 10),
+                Text('I see a',
+                    style: TextStyle(
+                        color: AppTheme.textS(context), fontSize: 14)),
+                const SizedBox(height: 4),
+                Text(
+                  state.currentIngredient.toUpperCase(),
+                  style: TextStyle(
+                    color: AppTheme.textP(context),
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text('Should I add it to your fridge?',
+                    style: TextStyle(
+                        color: AppTheme.textS(context), fontSize: 14)),
+              ],
+            ),
+          ).animate().fadeIn(duration: 350.ms).slideY(begin: 0.08, end: 0),
+
+          const SizedBox(height: 24),
+
+          // Action buttons
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: () =>
+                      context.read<CameraCubit>().skipIngredient(),
+                  icon: const Icon(Icons.skip_next_rounded, size: 18),
+                  label: const Text('Skip'),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: AppTheme.textS(context),
+                    side: BorderSide(color: AppTheme.border(context)),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14)),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                flex: 2,
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    _addToFridge(state.currentIngredient);
+                    AppSnackBar.showSuccess(context,
+                        '${state.currentIngredient} added to fridge! ✅');
+                    context.read<CameraCubit>().confirmIngredient();
+                  },
+                  icon: const Icon(Icons.add_rounded, size: 18),
+                  label: const Text('Yes, add to fridge'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppTheme.primary,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14)),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ],
-
-        // Empty state
-        if (_selectedImage == null && !_scanning)
-          Padding(
-            padding: const EdgeInsets.all(40),
-            child: Column(children: [
-              const Text('📸', style: TextStyle(fontSize: 56)),
-              const SizedBox(height: 16),
-              Text('Scan your ingredients', style: TextStyle(color: AppTheme.textP(context), fontSize: 16, fontWeight: FontWeight.w600)),
-              const SizedBox(height: 8),
-              Text('Take a photo or pick from gallery\nto auto-detect ingredients',
-                textAlign: TextAlign.center,
-                style: TextStyle(color: AppTheme.textS(context), height: 1.5)),
-            ]),
-          ),
-
-        if (_selectedImage != null && !_scanning && _detectedIngredients.isEmpty)
-          Padding(
-            padding: const EdgeInsets.all(24),
-            child: Text('No ingredients detected. Try a clearer photo.',
-              textAlign: TextAlign.center,
-              style: TextStyle(color: AppTheme.textS(context))),
-          ),
-      ]),
+      ),
     );
   }
 }

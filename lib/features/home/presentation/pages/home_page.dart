@@ -8,6 +8,7 @@ import '../../../../features/search/domain/entities/category_entity.dart';
 import '../../../../features/search/domain/entities/meal_entity.dart';
 import '../../../../features/search/presentation/widgets/meal_card.dart';
 import '../../../../features/search/presentation/blocs/search_bloc.dart';
+import '../../../../features/virtual_fridge/presentation/blocs/fridge_bloc.dart';
 import '../cubits/home_cubit.dart';
 import '../cubits/camera_cubit.dart';
 import '../cubits/voice_cubit.dart';
@@ -204,17 +205,27 @@ class HomePage extends StatelessWidget {
   }
 
   void _openCamera(BuildContext context) async {
-    final ingredients = await showModalBottomSheet<List<String>>(
+    // Create a FridgeBloc for the camera sheet so ingredients can be added
+    final fridgeBloc = sl<FridgeBloc>()..add(const LoadFridgeEvent());
+
+    final acceptedIngredients = await showModalBottomSheet<List<String>>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => BlocProvider(
-        create: (_) => sl<CameraCubit>(),
+      builder: (_) => MultiBlocProvider(
+        providers: [
+          BlocProvider(create: (_) => sl<CameraCubit>()),
+          BlocProvider.value(value: fridgeBloc),
+        ],
         child: const CameraScanSheet(),
       ),
     );
-    if (ingredients != null && ingredients.isNotEmpty && context.mounted) {
-      _searchIngredients(context, ingredients);
+
+    if (acceptedIngredients != null &&
+        acceptedIngredients.isNotEmpty &&
+        context.mounted) {
+      // Navigate to fridge page to show newly added items
+      context.go('/fridge');
     }
   }
 
