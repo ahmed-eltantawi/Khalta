@@ -3,7 +3,7 @@ import 'package:google_mlkit_image_labeling/google_mlkit_image_labeling.dart';
 class DetectIngredientsFromImage {
   // Pre-defined set of known food/ingredient labels to filter out non-food noise
   static const Set<String> _foodLabels = {
-    'food', 'vegetable', 'fruit', 'meat', 'chicken', 'beef', 'fish', 'egg',
+    'chicken', 'beef', 'fish', 'egg',
     'tomato', 'potato', 'onion', 'garlic', 'carrot', 'apple', 'banana', 'orange',
     'cheese', 'bread', 'pasta', 'rice', 'milk', 'pepper', 'salt', 'sugar',
     'butter', 'oil', 'lemon', 'lime', 'strawberry', 'blueberry', 'broccoli',

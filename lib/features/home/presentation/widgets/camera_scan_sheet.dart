@@ -241,7 +241,67 @@ class _CameraScanSheetState extends State<CameraScanSheet> {
 
   Widget _buildConfirmationView(
       BuildContext context, CameraIngredientConfirmation state, bool isDark) {
-    final stepNumber = state.accepted.length + 1;
+    return _IngredientConfirmationView(
+      state: state,
+      isDark: isDark,
+      onSkip: () => context.read<CameraCubit>().skipIngredient(),
+      onAdd: (finalName) {
+        _addToFridge(finalName);
+        AppSnackBar.showSuccess(context, '$finalName added to fridge! ✅');
+        context.read<CameraCubit>().confirmIngredient(finalName);
+      },
+      onCancel: () => Navigator.pop(context),
+    );
+  }
+}
+
+class _IngredientConfirmationView extends StatefulWidget {
+  final CameraIngredientConfirmation state;
+  final bool isDark;
+  final VoidCallback onSkip;
+  final Function(String) onAdd;
+  final VoidCallback onCancel;
+
+  const _IngredientConfirmationView({
+    required this.state,
+    required this.isDark,
+    required this.onSkip,
+    required this.onAdd,
+    required this.onCancel,
+    super.key,
+  });
+
+  @override
+  State<_IngredientConfirmationView> createState() => _IngredientConfirmationViewState();
+}
+
+class _IngredientConfirmationViewState extends State<_IngredientConfirmationView> {
+  late TextEditingController _nameController;
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController = TextEditingController(text: widget.state.currentIngredient);
+  }
+
+  @override
+  void didUpdateWidget(_IngredientConfirmationView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.state.currentIngredient != widget.state.currentIngredient) {
+      _nameController.text = widget.state.currentIngredient;
+    }
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final stepNumber = widget.state.accepted.length + 1;
+    final isUnknown = widget.state.currentIngredient.isEmpty;
 
     return Column(
       children: [
@@ -258,14 +318,14 @@ class _CameraScanSheetState extends State<CameraScanSheet> {
                       fontWeight: FontWeight.w600)),
               IconButton(
                 icon: Icon(Icons.close_rounded, color: AppTheme.textP(context)),
-                onPressed: () => Navigator.pop(context),
+                onPressed: widget.onCancel,
               ),
             ],
           ),
         ),
 
         // Progress indicator
-        if (state.totalDetected > 1)
+        if (widget.state.totalDetected > 1)
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24),
             child: Column(
@@ -274,15 +334,15 @@ class _CameraScanSheetState extends State<CameraScanSheet> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Item $stepNumber of ${state.totalDetected}',
+                      'Item $stepNumber of ${widget.state.totalDetected}',
                       style: TextStyle(
                           color: AppTheme.textS(context),
                           fontSize: 12,
                           fontWeight: FontWeight.w500),
                     ),
-                    if (state.accepted.isNotEmpty)
+                    if (widget.state.accepted.isNotEmpty)
                       Text(
-                        '${state.accepted.length} added',
+                        '${widget.state.accepted.length} added',
                         style: const TextStyle(
                             color: AppTheme.success,
                             fontSize: 12,
@@ -294,7 +354,7 @@ class _CameraScanSheetState extends State<CameraScanSheet> {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(4),
                   child: LinearProgressIndicator(
-                    value: stepNumber / state.totalDetected,
+                    value: stepNumber / widget.state.totalDetected,
                     backgroundColor: AppTheme.border(context),
                     valueColor:
                         const AlwaysStoppedAnimation<Color>(AppTheme.primary),
@@ -313,11 +373,11 @@ class _CameraScanSheetState extends State<CameraScanSheet> {
           height: 160,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
-            color: isDark ? AppTheme.surfaceDark : AppTheme.surfaceLight,
+            color: widget.isDark ? AppTheme.surfaceDark : AppTheme.surfaceLight,
           ),
           clipBehavior: Clip.hardEdge,
           child: Image.file(
-            File(state.imagePath),
+            File(widget.state.imagePath),
             width: double.infinity,
             fit: BoxFit.cover,
           ),
@@ -325,7 +385,7 @@ class _CameraScanSheetState extends State<CameraScanSheet> {
 
         const SizedBox(height: 28),
 
-        // "I see a potato" message
+        // Editable name card
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Container(
@@ -337,7 +397,7 @@ class _CameraScanSheetState extends State<CameraScanSheet> {
               border: Border.all(color: AppTheme.border(context), width: 0.5),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.05),
+                  color: Colors.black.withValues(alpha: widget.isDark ? 0.2 : 0.05),
                   blurRadius: 12,
                   offset: const Offset(0, 4),
                 ),
@@ -345,47 +405,84 @@ class _CameraScanSheetState extends State<CameraScanSheet> {
             ),
             child: Column(
               children: [
-                // Ingredient image from CDN
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: Image.network(
-                    ApiConstants.ingredientImageUrl(state.currentIngredient),
-                    width: 64,
-                    height: 64,
-                    fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => Container(
+                // Ingredient image from CDN (if known)
+                if (!isUnknown)
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: Image.network(
+                      ApiConstants.ingredientImageUrl(widget.state.currentIngredient),
                       width: 64,
                       height: 64,
-                      decoration: BoxDecoration(
-                        color: AppTheme.primary.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(12),
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) => Container(
+                        width: 64,
+                        height: 64,
+                        decoration: BoxDecoration(
+                          color: AppTheme.primary.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Icon(Icons.eco_rounded,
+                            size: 32, color: AppTheme.primary),
                       ),
-                      child: const Icon(Icons.eco_rounded,
-                          size: 32, color: AppTheme.primary),
                     ),
+                  )
+                else
+                  Container(
+                    width: 64,
+                    height: 64,
+                    decoration: BoxDecoration(
+                      color: AppTheme.warning.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(Icons.help_outline_rounded,
+                        size: 32, color: AppTheme.warning),
                   ),
-                ),
                 const SizedBox(height: 12),
+                
                 Text(
-                  'I see a',
-                  style: TextStyle(
-                      color: AppTheme.textS(context), fontSize: 14),
+                  isUnknown ? "We couldn't recognize this item" : 'I see a',
+                  style: TextStyle(color: AppTheme.textS(context), fontSize: 14),
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  state.currentIngredient.toUpperCase(),
+                const SizedBox(height: 8),
+                
+                // Editable Text Field
+                TextField(
+                  controller: _nameController,
+                  textAlign: TextAlign.center,
                   style: TextStyle(
                     color: AppTheme.textP(context),
                     fontSize: 22,
                     fontWeight: FontWeight.w700,
                     letterSpacing: 0.5,
                   ),
+                  decoration: InputDecoration(
+                    hintText: 'Enter ingredient name',
+                    hintStyle: TextStyle(
+                      color: AppTheme.textH(context),
+                      fontSize: 20,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    border: InputBorder.none,
+                    isDense: true,
+                    contentPadding: EdgeInsets.zero,
+                  ),
                 ),
-                const SizedBox(height: 8),
+                
+                // Underline indicator for editable text
+                Container(
+                  margin: const EdgeInsets.only(top: 4),
+                  height: 2,
+                  width: 120,
+                  decoration: BoxDecoration(
+                    color: AppTheme.border(context),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                
+                const SizedBox(height: 12),
                 Text(
                   'Should I add it to your fridge?',
-                  style: TextStyle(
-                      color: AppTheme.textS(context), fontSize: 14),
+                  style: TextStyle(color: AppTheme.textS(context), fontSize: 14),
                 ),
               ],
             ),
@@ -402,9 +499,7 @@ class _CameraScanSheetState extends State<CameraScanSheet> {
               // Skip button
               Expanded(
                 child: OutlinedButton.icon(
-                  onPressed: () {
-                    context.read<CameraCubit>().skipIngredient();
-                  },
+                  onPressed: widget.onSkip,
                   icon: const Icon(Icons.skip_next_rounded, size: 18),
                   label: const Text('Skip'),
                   style: OutlinedButton.styleFrom(
@@ -422,10 +517,12 @@ class _CameraScanSheetState extends State<CameraScanSheet> {
                 flex: 2,
                 child: ElevatedButton.icon(
                   onPressed: () {
-                    _addToFridge(state.currentIngredient);
-                    AppSnackBar.showSuccess(context,
-                        '${state.currentIngredient} added to fridge! ✅');
-                    context.read<CameraCubit>().confirmIngredient();
+                    final name = _nameController.text.trim();
+                    if (name.isEmpty) {
+                      AppSnackBar.showError(context, 'Please enter a name first');
+                      return;
+                    }
+                    widget.onAdd(name);
                   },
                   icon: const Icon(Icons.add_rounded, size: 18),
                   label: const Text('Yes, add to fridge'),

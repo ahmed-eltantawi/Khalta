@@ -66,7 +66,12 @@ class CameraCubit extends Cubit<CameraCubitState> {
     try {
       final ingredients = await detectIngredients(path);
       if (ingredients.isEmpty) {
-        emit(CameraError('No ingredients detected. Try a clearer photo.'));
+        // If nothing is detected, instead of failing, provide an empty string 
+        // so the user can still add an item manually via the confirmation UI.
+        _totalDetected = 1;
+        _pendingIngredients = [''];
+        _acceptedIngredients = [];
+        _showNextConfirmation();
         return;
       }
       _totalDetected = ingredients.length;
@@ -79,10 +84,18 @@ class CameraCubit extends Cubit<CameraCubitState> {
   }
 
   /// User confirmed the current ingredient — add it and advance.
-  void confirmIngredient() {
+  /// If [finalName] is provided, it overrides the detected name.
+  void confirmIngredient([String? finalName]) {
     final currentState = state;
     if (currentState is CameraIngredientConfirmation) {
-      _acceptedIngredients.add(currentState.currentIngredient);
+      final nameToAdd = (finalName != null && finalName.trim().isNotEmpty)
+          ? finalName.trim()
+          : currentState.currentIngredient;
+          
+      // Only add if it's not entirely empty
+      if (nameToAdd.isNotEmpty) {
+        _acceptedIngredients.add(nameToAdd);
+      }
       _showNextConfirmation();
     }
   }
