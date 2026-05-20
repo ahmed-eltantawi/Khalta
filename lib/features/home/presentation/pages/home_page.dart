@@ -21,13 +21,13 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.backgroundDark,
+      backgroundColor: AppTheme.bg(context),
       body: SafeArea(
         child: BlocBuilder<HomeCubit, HomeCubitState>(
           builder: (context, state) {
             return RefreshIndicator(
               color: AppTheme.primary,
-              backgroundColor: AppTheme.cardDark,
+              backgroundColor: AppTheme.card(context),
               onRefresh: () => context.read<HomeCubit>().refresh(),
               child: CustomScrollView(
                 slivers: [
@@ -41,11 +41,13 @@ class HomePage extends StatelessWidget {
                   ),
                   // ── Categories ───────────────────────────────────────────
                   SliverToBoxAdapter(
-                    child: _buildSectionTitle(context, "Browse Categories", onSeeAll: () => context.go('/search')),
+                    child: _buildSectionTitle(context, "Browse Categories",
+                        onSeeAll: () => context.go('/search')),
                   ),
                   SliverToBoxAdapter(
                     child: state is HomeLoaded
-                        ? _buildCategories(context, state.categories.cast<CategoryEntity>())
+                        ? _buildCategories(
+                            context, state.categories.cast<CategoryEntity>())
                         : const HorizontalSkeletonLoader(count: 5),
                   ),
                   // ── Today's suggestions ──────────────────────────────────
@@ -53,7 +55,8 @@ class HomePage extends StatelessWidget {
                     child: _buildSectionTitle(context, "Today's Suggestions"),
                   ),
                   if (state is HomeLoading)
-                    SliverToBoxAdapter(child: SizedBox(
+                    SliverToBoxAdapter(
+                        child: SizedBox(
                       height: 220,
                       child: ListView.builder(
                         scrollDirection: Axis.horizontal,
@@ -61,7 +64,8 @@ class HomePage extends StatelessWidget {
                         itemCount: 4,
                         itemBuilder: (_, __) => const Padding(
                           padding: EdgeInsets.only(right: 12),
-                          child: SizedBox(width: 160, child: MealCardSkeleton()),
+                          child:
+                              SizedBox(width: 160, child: MealCardSkeleton()),
                         ),
                       ),
                     )),
@@ -94,13 +98,13 @@ class HomePage extends StatelessWidget {
             children: [
               Text(
                 'Hello, Chef! 👋',
-                style: TextStyle(color: AppTheme.textSecondary, fontSize: 14),
+                style: TextStyle(color: AppTheme.textS(context), fontSize: 14),
               ),
               const SizedBox(height: 2),
-              const Text(
+              Text(
                 'What to cook today?',
                 style: TextStyle(
-                  color: AppTheme.textPrimary,
+                  color: AppTheme.textP(context),
                   fontSize: 22,
                   fontWeight: FontWeight.w700,
                 ),
@@ -112,11 +116,12 @@ class HomePage extends StatelessWidget {
             child: Container(
               width: 44,
               height: 44,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 gradient: AppTheme.primaryGradient,
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Icons.person_rounded, color: Colors.white, size: 22),
+              child: const Icon(Icons.person_rounded,
+                  color: Colors.white, size: 22),
             ),
           ),
         ],
@@ -166,7 +171,8 @@ class HomePage extends StatelessWidget {
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.white,
                             foregroundColor: AppTheme.primary,
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 10),
                           ),
                         ),
                       ),
@@ -177,10 +183,12 @@ class HomePage extends StatelessWidget {
                           icon: const Icon(Icons.mic_rounded, size: 18),
                           label: const Text('Voice'),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white.withValues(alpha: 0.2),
+                            backgroundColor:
+                                Colors.white.withValues(alpha: 0.2),
                             foregroundColor: Colors.white,
                             elevation: 0,
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 10),
                           ),
                         ),
                       ),
@@ -220,25 +228,29 @@ class HomePage extends StatelessWidget {
       ),
     );
     if (ingredients != null && ingredients.isNotEmpty && context.mounted) {
-       _searchIngredients(context, ingredients);
+      _searchIngredients(context, ingredients);
     }
   }
 
   void _searchIngredients(BuildContext context, List<String> ingredients) {
-     final searchBloc = context.read<SearchBloc>();
-     searchBloc.add(IngredientSearched(ingredients.first)); // Searching by first due to API limitations
-     context.go('/search');
+    final searchBloc = context.read<SearchBloc>();
+    // Add each detected ingredient as a chip so multi-ingredient filtering works
+    for (final ingredient in ingredients) {
+      searchBloc.add(IngredientChipAdded(ingredient));
+    }
+    context.go('/search');
   }
 
-  Widget _buildSectionTitle(BuildContext context, String title, {VoidCallback? onSeeAll}) {
+  Widget _buildSectionTitle(BuildContext context, String title,
+      {VoidCallback? onSeeAll}) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 8, 20, 12),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(title,
-              style: const TextStyle(
-                color: AppTheme.textPrimary,
+              style: TextStyle(
+                color: AppTheme.textP(context),
                 fontSize: 17,
                 fontWeight: FontWeight.w600,
               )),
@@ -252,7 +264,8 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildCategories(BuildContext context, List<CategoryEntity> categories) {
+  Widget _buildCategories(
+      BuildContext context, List<CategoryEntity> categories) {
     return SizedBox(
       height: 44,
       child: ListView.builder(
@@ -269,14 +282,14 @@ class HomePage extends StatelessWidget {
               margin: const EdgeInsets.only(right: 8),
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
               decoration: BoxDecoration(
-                color: AppTheme.cardDark,
+                color: AppTheme.card(context),
                 borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: AppTheme.borderDark),
+                border: Border.all(color: AppTheme.border(context)),
               ),
               child: Text(
                 cat.name,
-                style: const TextStyle(
-                  color: AppTheme.textSecondary,
+                style: TextStyle(
+                  color: AppTheme.textS(context),
                   fontSize: 13,
                   fontWeight: FontWeight.w500,
                 ),
@@ -309,9 +322,12 @@ class HomePage extends StatelessWidget {
       padding: const EdgeInsets.all(32),
       child: Column(
         children: [
-          const Icon(Icons.wifi_off_rounded, color: AppTheme.textHint, size: 48),
+          Icon(Icons.wifi_off_rounded,
+              color: AppTheme.textH(context), size: 48),
           const SizedBox(height: 12),
-          Text(message, textAlign: TextAlign.center, style: const TextStyle(color: AppTheme.textSecondary)),
+          Text(message,
+              textAlign: TextAlign.center,
+              style: TextStyle(color: AppTheme.textS(context))),
           const SizedBox(height: 16),
           ElevatedButton(
             onPressed: () => context.read<HomeCubit>().refresh(),

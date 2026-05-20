@@ -12,7 +12,7 @@ class SavedRecipesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.backgroundDark,
+      backgroundColor: AppTheme.bg(context),
       body: SafeArea(
         child: BlocBuilder<SavedRecipesCubit, List<MealEntity>>(
           builder: (context, meals) {
@@ -24,14 +24,14 @@ class SavedRecipesPage extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text('Saved Recipes ❤️',
+                        Text('Saved Recipes ❤️',
                             style: TextStyle(
-                                color: AppTheme.textPrimary,
+                                color: AppTheme.textP(context),
                                 fontSize: 24,
                                 fontWeight: FontWeight.w700)),
                         Text('${meals.length} saved',
-                            style: const TextStyle(
-                                color: AppTheme.textSecondary, fontSize: 14)),
+                            style: TextStyle(
+                                color: AppTheme.textS(context), fontSize: 14)),
                       ],
                     ).animate().fadeIn(duration: 350.ms),
                   ),
@@ -41,19 +41,19 @@ class SavedRecipesPage extends StatelessWidget {
                     child: Padding(
                       padding: const EdgeInsets.all(48),
                       child: Column(
-                        children: const [
-                          Text('❤️', style: TextStyle(fontSize: 64)),
-                          SizedBox(height: 16),
+                        children: [
+                          const Text('❤️', style: TextStyle(fontSize: 64)),
+                          const SizedBox(height: 16),
                           Text('No saved recipes yet',
                               style: TextStyle(
-                                  color: AppTheme.textPrimary,
+                                  color: AppTheme.textP(context),
                                   fontSize: 18,
                                   fontWeight: FontWeight.w600)),
-                          SizedBox(height: 8),
+                          const SizedBox(height: 8),
                           Text(
                             'Tap the heart icon on any recipe\nto save it here.',
                             textAlign: TextAlign.center,
-                            style: TextStyle(color: AppTheme.textSecondary, height: 1.5),
+                            style: TextStyle(color: AppTheme.textS(context), height: 1.5),
                           ),
                         ],
                       ),
@@ -100,9 +100,9 @@ class _SavedMealRow extends StatelessWidget {
         child: Container(
           margin: const EdgeInsets.fromLTRB(16, 0, 16, 10),
           decoration: BoxDecoration(
-            color: AppTheme.cardDark,
+            color: AppTheme.card(context),
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: AppTheme.borderDark, width: 0.5),
+            border: Border.all(color: AppTheme.border(context), width: 0.5),
           ),
           child: Row(
             children: [
@@ -117,14 +117,14 @@ class _SavedMealRow extends StatelessWidget {
                         errorBuilder: (_, __, ___) => Container(
                             width: 90,
                             height: 90,
-                            color: AppTheme.surfaceDark,
+                            color: AppTheme.surface(context),
                             child: const Icon(Icons.restaurant,
                                 color: AppTheme.textHint)),
                       )
                     : Container(
                         width: 90,
                         height: 90,
-                        color: AppTheme.surfaceDark,
+                        color: AppTheme.surface(context),
                         child: const Icon(Icons.restaurant, color: AppTheme.textHint),
                       ),
               ),
@@ -137,8 +137,8 @@ class _SavedMealRow extends StatelessWidget {
                     children: [
                       Text(
                         meal.name,
-                        style: const TextStyle(
-                          color: AppTheme.textPrimary,
+                        style: TextStyle(
+                          color: AppTheme.textP(context),
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
                         ),

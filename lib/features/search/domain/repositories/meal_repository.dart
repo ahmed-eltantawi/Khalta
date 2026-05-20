@@ -11,4 +11,5 @@ abstract class MealRepository {
   Future<List<MealEntity>> filterMealsByCategory(String category);
   Future<List<MealEntity>> filterMealsByArea(String area);
   Future<List<MealEntity>> filterMealsByIngredients(List<String> ingredients);
+  Future<List<String>> getAllIngredients();
 }

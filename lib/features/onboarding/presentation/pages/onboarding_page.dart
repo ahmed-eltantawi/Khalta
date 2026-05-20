@@ -56,7 +56,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.backgroundDark,
+      backgroundColor: AppTheme.bg(context),
       body: Stack(
         children: [
           // Page view
@@ -73,7 +73,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
             right: 24,
             child: TextButton(
               onPressed: _finish,
-              child: const Text('Skip', style: TextStyle(color: AppTheme.textSecondary)),
+              child: Text('Skip', style: TextStyle(color: AppTheme.textS(context))),
             ),
           ),
           // Bottom controls
@@ -98,7 +98,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                         decoration: BoxDecoration(
                           color: _currentPage == i
                               ? AppTheme.primary
-                              : AppTheme.borderDark,
+                              : AppTheme.border(context),
                           borderRadius: BorderRadius.circular(4),
                         ),
                       ),
@@ -186,8 +186,8 @@ class _OnboardSlideWidget extends StatelessWidget {
               Text(
                 slide.title,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
-                  color: AppTheme.textPrimary,
+                style: TextStyle(
+                  color: AppTheme.textP(context),
                   fontSize: 26,
                   fontWeight: FontWeight.w700,
                 ),
@@ -199,8 +199,8 @@ class _OnboardSlideWidget extends StatelessWidget {
               Text(
                 slide.subtitle,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
-                  color: AppTheme.textSecondary,
+                style: TextStyle(
+                  color: AppTheme.textS(context),
                   fontSize: 15,
                   height: 1.6,
                 ),

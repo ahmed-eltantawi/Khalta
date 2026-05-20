@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../../core/theme/theme_cubit.dart';
 import '../../../../features/health_profile/domain/entities/health_profile_entity.dart';
 import 'health_profile_cubit.dart';
 
@@ -11,7 +12,7 @@ class HealthProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.backgroundDark,
+      backgroundColor: AppTheme.bg(context),
       body: SafeArea(
         child: BlocBuilder<HealthProfileCubit, HealthProfileEntity>(
           builder: (context, profile) {
@@ -24,15 +25,15 @@ class HealthProfilePage extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text('Health Profile 🥗',
+                        Text('Health Profile 🥗',
                             style: TextStyle(
-                                color: AppTheme.textPrimary,
+                                color: AppTheme.textP(context),
                                 fontSize: 24,
                                 fontWeight: FontWeight.w700)),
                         const SizedBox(height: 4),
-                        const Text('Personalize your recipe recommendations',
+                        Text('Personalize your recipe recommendations',
                             style: TextStyle(
-                                color: AppTheme.textSecondary, fontSize: 14)),
+                                color: AppTheme.textS(context), fontSize: 14)),
                       ],
                     ).animate().fadeIn(duration: 350.ms),
                   ),
@@ -87,8 +88,8 @@ class HealthProfilePage extends StatelessWidget {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Text('Target',
-                                style: TextStyle(color: AppTheme.textSecondary, fontSize: 14)),
+                            Text('Target',
+                                style: TextStyle(color: AppTheme.textS(context), fontSize: 14)),
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                               decoration: BoxDecoration(
@@ -109,7 +110,7 @@ class HealthProfilePage extends StatelessWidget {
                         SliderTheme(
                           data: SliderTheme.of(context).copyWith(
                             activeTrackColor: AppTheme.primary,
-                            inactiveTrackColor: AppTheme.borderDark,
+                            inactiveTrackColor: AppTheme.border(context),
                             thumbColor: AppTheme.primary,
                             overlayColor: AppTheme.primary.withValues(alpha: 0.2),
                           ),
@@ -125,9 +126,9 @@ class HealthProfilePage extends StatelessWidget {
                         ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: const [
-                            Text('1000', style: TextStyle(color: AppTheme.textHint, fontSize: 11)),
-                            Text('4000', style: TextStyle(color: AppTheme.textHint, fontSize: 11)),
+                          children: [
+                            Text('1000', style: TextStyle(color: AppTheme.textH(context), fontSize: 11)),
+                            Text('4000', style: TextStyle(color: AppTheme.textH(context), fontSize: 11)),
                           ],
                         ),
                       ],
@@ -157,8 +158,8 @@ class HealthProfilePage extends StatelessWidget {
                                 Expanded(
                                   child: Text(
                                     '$diet — excludes: ${excluded.take(4).join(', ')}…',
-                                    style: const TextStyle(
-                                        color: AppTheme.textSecondary, fontSize: 12),
+                                    style: TextStyle(
+                                        color: AppTheme.textS(context), fontSize: 12),
                                   ),
                                 ),
                               ],
@@ -168,6 +169,29 @@ class HealthProfilePage extends StatelessWidget {
                       ),
                     ),
                   ),
+                // ── Theme Toggle ─────────────────────────────────────────
+                SliverToBoxAdapter(
+                  child: _Section(
+                    title: 'Appearance',
+                    icon: Icons.palette_rounded,
+                    child: BlocBuilder<ThemeCubit, ThemeMode>(
+                      builder: (context, themeMode) {
+                        return Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text('Dark Mode',
+                              style: TextStyle(color: AppTheme.textP(context), fontSize: 14)),
+                            Switch.adaptive(
+                              value: themeMode == ThemeMode.dark,
+                              activeTrackColor: AppTheme.primary,
+                              onChanged: (_) => context.read<ThemeCubit>().toggleTheme(),
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+                  ),
+                ),
                 const SliverToBoxAdapter(child: SizedBox(height: 40)),
               ],
             );
@@ -191,9 +215,9 @@ class _Section extends StatelessWidget {
       margin: const EdgeInsets.fromLTRB(16, 8, 16, 4),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppTheme.cardDark,
+        color: AppTheme.card(context),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppTheme.borderDark, width: 0.5),
+        border: Border.all(color: AppTheme.border(context), width: 0.5),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -203,8 +227,8 @@ class _Section extends StatelessWidget {
               Icon(icon, color: AppTheme.primary, size: 18),
               const SizedBox(width: 8),
               Text(title,
-                  style: const TextStyle(
-                      color: AppTheme.textPrimary,
+                  style: TextStyle(
+                      color: AppTheme.textP(context),
                       fontSize: 15,
                       fontWeight: FontWeight.w600)),
             ],
@@ -238,10 +262,10 @@ class _SelectableChip extends StatelessWidget {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
-          color: isSelected ? color : AppTheme.surfaceDark,
+          color: isSelected ? color : AppTheme.surface(context),
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: isSelected ? color : AppTheme.borderDark,
+            color: isSelected ? color : AppTheme.border(context),
           ),
         ),
         child: Row(
@@ -254,7 +278,7 @@ class _SelectableChip extends StatelessWidget {
             Text(
               label,
               style: TextStyle(
-                color: isSelected ? Colors.white : AppTheme.textSecondary,
+                color: isSelected ? Colors.white : AppTheme.textS(context),
                 fontSize: 13,
                 fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
               ),

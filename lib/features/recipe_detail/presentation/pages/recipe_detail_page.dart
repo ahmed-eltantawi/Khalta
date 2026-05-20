@@ -62,7 +62,7 @@ class _RecipeDetailPageState extends State<RecipeDetailPage>
   Widget build(BuildContext context) {
     final meal = _meal;
     return Scaffold(
-      backgroundColor: AppTheme.backgroundDark,
+      backgroundColor: AppTheme.bg(context),
       body: _loading
           ? const Center(
               child: CircularProgressIndicator(color: AppTheme.primary))
@@ -79,7 +79,7 @@ class _RecipeDetailPageState extends State<RecipeDetailPage>
         children: [
           const Icon(Icons.error_outline, color: AppTheme.error, size: 48),
           const SizedBox(height: 12),
-          const Text('Could not load recipe', style: TextStyle(color: AppTheme.textSecondary)),
+          Text('Could not load recipe', style: TextStyle(color: AppTheme.textS(context))),
           TextButton(onPressed: () => Navigator.pop(context), child: const Text('Go Back')),
         ],
       ),
@@ -93,7 +93,7 @@ class _RecipeDetailPageState extends State<RecipeDetailPage>
         SliverAppBar(
           expandedHeight: 280,
           pinned: true,
-          backgroundColor: AppTheme.backgroundDark,
+          backgroundColor: AppTheme.bg(context),
           leading: IconButton(
             icon: Container(
               padding: const EdgeInsets.all(6),
@@ -151,8 +151,8 @@ class _RecipeDetailPageState extends State<RecipeDetailPage>
               children: [
                 Text(
                   meal.name,
-                  style: const TextStyle(
-                    color: AppTheme.textPrimary,
+                  style: TextStyle(
+                    color: AppTheme.textP(context),
                     fontSize: 24,
                     fontWeight: FontWeight.w700,
                   ),
@@ -183,7 +183,7 @@ class _RecipeDetailPageState extends State<RecipeDetailPage>
                 // Tab bar
                 Container(
                   decoration: BoxDecoration(
-                    color: AppTheme.cardDark,
+                    color: AppTheme.card(context),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: TabBar(
@@ -193,7 +193,7 @@ class _RecipeDetailPageState extends State<RecipeDetailPage>
                       borderRadius: BorderRadius.circular(10),
                     ),
                     labelColor: Colors.white,
-                    unselectedLabelColor: AppTheme.textSecondary,
+                    unselectedLabelColor: AppTheme.textS(context),
                     dividerColor: Colors.transparent,
                     tabs: const [
                       Tab(text: 'Ingredients'),
@@ -259,9 +259,9 @@ class _IngredientsTab extends StatelessWidget {
           margin: const EdgeInsets.only(bottom: 8),
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
           decoration: BoxDecoration(
-            color: AppTheme.cardDark,
+            color: AppTheme.card(context),
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppTheme.borderDark, width: 0.5),
+            border: Border.all(color: AppTheme.border(context), width: 0.5),
           ),
           child: Row(
             children: [
@@ -279,8 +279,8 @@ class _IngredientsTab extends StatelessWidget {
               Expanded(
                 child: Text(
                   ing.key,
-                  style: const TextStyle(
-                    color: AppTheme.textPrimary,
+                  style: TextStyle(
+                    color: AppTheme.textP(context),
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
                   ),
@@ -288,7 +288,7 @@ class _IngredientsTab extends StatelessWidget {
               ),
               Text(
                 ing.value,
-                style: const TextStyle(color: AppTheme.textSecondary, fontSize: 13),
+                style: TextStyle(color: AppTheme.textS(context), fontSize: 13),
               ),
             ],
           ),
@@ -310,8 +310,8 @@ class _InstructionsTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (meal.instructions == null || meal.instructions!.trim().isEmpty) {
-      return const Center(
-        child: Text('No instructions available', style: TextStyle(color: AppTheme.textSecondary)),
+      return Center(
+        child: Text('No instructions available', style: TextStyle(color: AppTheme.textS(context))),
       );
     }
     final steps = meal.instructions!
@@ -350,8 +350,8 @@ class _InstructionsTab extends StatelessWidget {
                 padding: const EdgeInsets.only(bottom: 16),
                 child: Text(
                   steps[i].trim(),
-                  style: const TextStyle(
-                    color: AppTheme.textSecondary,
+                  style: TextStyle(
+                    color: AppTheme.textS(context),
                     fontSize: 14,
                     height: 1.6,
                   ),
@@ -403,30 +403,30 @@ class _NutritionTab extends StatelessWidget {
               children: [
                 Icon(Icons.info_outline_rounded, color: AppTheme.warning, size: 18),
                 const SizedBox(width: 8),
-                const Expanded(
+                Expanded(
                   child: Text(
                     'Estimated values based on ingredients count.',
-                    style: TextStyle(color: AppTheme.textSecondary, fontSize: 12),
+                    style: TextStyle(color: AppTheme.textS(context), fontSize: 12),
                   ),
                 ),
               ],
             ),
           ),
           const SizedBox(height: 20),
-          ...items.asMap().entries.map((e) => _buildNutritionRow(e.value, e.key)),
+          ...items.asMap().entries.map((e) => _buildNutritionRow(context, e.value, e.key)),
         ],
       ),
     );
   }
 
-  Widget _buildNutritionRow(_NutritionItem item, int index) {
+  Widget _buildNutritionRow(BuildContext context, _NutritionItem item, int index) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppTheme.cardDark,
+        color: AppTheme.card(context),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppTheme.borderDark, width: 0.5),
+        border: Border.all(color: AppTheme.border(context), width: 0.5),
       ),
       child: Row(
         children: [
@@ -448,7 +448,7 @@ class _NutritionTab extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(item.label,
-                        style: const TextStyle(color: AppTheme.textPrimary, fontSize: 14, fontWeight: FontWeight.w500)),
+                        style: TextStyle(color: AppTheme.textP(context), fontSize: 14, fontWeight: FontWeight.w500)),
                     Text(item.value,
                         style: TextStyle(color: item.color, fontSize: 14, fontWeight: FontWeight.w600)),
                   ],
@@ -458,7 +458,7 @@ class _NutritionTab extends StatelessWidget {
                   borderRadius: BorderRadius.circular(4),
                   child: LinearProgressIndicator(
                     value: item.percent.clamp(0.0, 1.0),
-                    backgroundColor: AppTheme.borderDark,
+                    backgroundColor: AppTheme.border(context),
                     valueColor: AlwaysStoppedAnimation(item.color),
                     minHeight: 5,
                   ),

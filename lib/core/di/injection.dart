@@ -55,6 +55,7 @@ Future<void> initDependencies() async {
   sl.registerLazySingleton(() => FilterMealsByCategory(sl<MealRepository>()));
   sl.registerLazySingleton(() => FilterMealsByArea(sl<MealRepository>()));
   sl.registerLazySingleton(() => FilterMealsByIngredients(sl<MealRepository>()));
+  sl.registerLazySingleton(() => GetAllIngredients(sl<MealRepository>()));
   
   sl.registerLazySingleton(() => DetectIngredientsFromImage());
 
@@ -73,6 +74,8 @@ Future<void> initDependencies() async {
         filterMealsByCategory: sl<FilterMealsByCategory>(),
         filterMealsByArea: sl<FilterMealsByArea>(),
         getAllCategories: sl<GetAllCategories>(),
+        getAllIngredients: sl<GetAllIngredients>(),
+        filterMealsByIngredients: sl<FilterMealsByIngredients>(),
       ));
 
   sl.registerFactory(() => FridgeBloc(

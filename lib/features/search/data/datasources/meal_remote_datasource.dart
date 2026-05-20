@@ -12,6 +12,7 @@ abstract class MealRemoteDataSource {
   Future<List<CategoryModel>> getAllCategories();
   Future<List<MealModel>> filterMealsByCategory(String category);
   Future<List<MealModel>> filterMealsByArea(String area);
+  Future<List<String>> getAllIngredients();
 }
 
 class MealRemoteDataSourceImpl implements MealRemoteDataSource {
@@ -115,6 +116,24 @@ class MealRemoteDataSourceImpl implements MealRemoteDataSource {
       return (meals as List).map((m) => MealModel.fromFilterJson(m)).toList();
     } on DioException catch (e) {
       throw ServerException(message: e.message ?? 'Failed to filter by area');
+    }
+  }
+
+  @override
+  Future<List<String>> getAllIngredients() async {
+    try {
+      final response = await _dio.get(
+        ApiConstants.list,
+        queryParameters: {'i': 'list'},
+      );
+      final meals = response.data['meals'];
+      if (meals == null) return [];
+      return (meals as List)
+          .map((m) => (m['strIngredient'] as String? ?? '').trim())
+          .where((s) => s.isNotEmpty)
+          .toList();
+    } on DioException catch (e) {
+      throw ServerException(message: e.message ?? 'Failed to get ingredients');
     }
   }
 }

@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'core/di/injection.dart';
 import 'core/navigation/app_router.dart';
 import 'core/theme/app_theme.dart';
+import 'core/theme/theme_cubit.dart';
 import 'features/virtual_fridge/data/datasources/fridge_local_datasource.dart';
 import 'features/saved_recipes/data/datasources/saved_recipes_datasource.dart';
 import 'features/health_profile/presentation/pages/health_profile_cubit.dart';
@@ -17,9 +18,6 @@ void main() async {
   // System UI
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
-    statusBarIconBrightness: Brightness.light,
-    systemNavigationBarColor: AppTheme.backgroundDark,
-    systemNavigationBarIconBrightness: Brightness.light,
   ));
 
   SystemChrome.setPreferredOrientations([
@@ -50,12 +48,21 @@ class ZikolaApp extends StatelessWidget {
         BlocProvider<SavedRecipesCubit>(
           create: (_) => sl<SavedRecipesCubit>()..loadSaved(),
         ),
+        BlocProvider<ThemeCubit>(
+          create: (_) => ThemeCubit(),
+        ),
       ],
-      child: MaterialApp.router(
-        title: 'Zikola',
-        debugShowCheckedModeBanner: false,
-        theme: AppTheme.dark,
-        routerConfig: AppRouter.router,
+      child: BlocBuilder<ThemeCubit, ThemeMode>(
+        builder: (context, themeMode) {
+          return MaterialApp.router(
+            title: 'Zikola',
+            debugShowCheckedModeBanner: false,
+            theme: AppTheme.light,
+            darkTheme: AppTheme.dark,
+            themeMode: themeMode,
+            routerConfig: AppRouter.router,
+          );
+        },
       ),
     );
   }

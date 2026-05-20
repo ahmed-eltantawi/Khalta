@@ -68,3 +68,10 @@ class FilterMealsByIngredients {
   Future<List<MealEntity>> call(List<String> ingredients) =>
       repository.filterMealsByIngredients(ingredients);
 }
+
+class GetAllIngredients {
+  final MealRepository repository;
+  GetAllIngredients(this.repository);
+
+  Future<List<String>> call() => repository.getAllIngredients();
+}

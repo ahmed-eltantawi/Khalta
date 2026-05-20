@@ -91,23 +91,26 @@ class FridgeBloc extends Bloc<FridgeEvent, FridgeState> {
       final items = dataSource.getAll();
       emit(FridgeLoaded(items: items));
     } catch (e) {
-      emit(FridgeError('Failed to load fridge items.'));
+      emit(const FridgeError('Failed to load fridge items.'));
     }
   }
 
-  Future<void> _onAdd(AddFridgeItemEvent event, Emitter<FridgeState> emit) async {
+  Future<void> _onAdd(
+      AddFridgeItemEvent event, Emitter<FridgeState> emit) async {
     await dataSource.add(event.item);
     final items = dataSource.getAll();
     emit(FridgeLoaded(items: items));
   }
 
-  Future<void> _onRemove(RemoveFridgeItemEvent event, Emitter<FridgeState> emit) async {
+  Future<void> _onRemove(
+      RemoveFridgeItemEvent event, Emitter<FridgeState> emit) async {
     await dataSource.delete(event.id);
     final items = dataSource.getAll();
     emit(FridgeLoaded(items: items));
   }
 
-  Future<void> _onUpdate(UpdateFridgeItemEvent event, Emitter<FridgeState> emit) async {
+  Future<void> _onUpdate(
+      UpdateFridgeItemEvent event, Emitter<FridgeState> emit) async {
     await dataSource.update(event.item);
     final items = dataSource.getAll();
     emit(FridgeLoaded(items: items));

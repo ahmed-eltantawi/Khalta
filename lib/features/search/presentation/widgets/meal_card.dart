@@ -25,9 +25,9 @@ class MealCard extends StatelessWidget {
       onTap: () => context.push('/recipe/${meal.id}', extra: meal),
       child: Container(
         decoration: BoxDecoration(
-          color: AppTheme.cardDark,
+          color: AppTheme.card(context),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppTheme.borderDark, width: 0.5),
+          border: Border.all(color: AppTheme.border(context), width: 0.5),
         ),
         clipBehavior: Clip.antiAlias,
         child: Column(
@@ -43,18 +43,18 @@ class MealCard extends StatelessWidget {
                           imageUrl: meal.thumbnailUrl!,
                           fit: BoxFit.cover,
                           placeholder: (_, __) => Container(
-                            color: AppTheme.surfaceDark,
+                            color: AppTheme.surface(context),
                             child: const Center(
                               child: Icon(Icons.restaurant, color: AppTheme.textHint, size: 32),
                             ),
                           ),
                           errorWidget: (_, __, ___) => Container(
-                            color: AppTheme.surfaceDark,
+                            color: AppTheme.surface(context),
                             child: const Icon(Icons.broken_image, color: AppTheme.textHint),
                           ),
                         )
                       : Container(
-                          color: AppTheme.surfaceDark,
+                          color: AppTheme.surface(context),
                           child: const Center(
                             child: Icon(Icons.restaurant, color: AppTheme.textHint, size: 32),
                           ),
@@ -124,8 +124,8 @@ class MealCard extends StatelessWidget {
                 children: [
                   Text(
                     meal.name,
-                    style: const TextStyle(
-                      color: AppTheme.textPrimary,
+                    style: TextStyle(
+                      color: AppTheme.textP(context),
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
                     ),
@@ -141,8 +141,8 @@ class MealCard extends StatelessWidget {
                         const SizedBox(width: 3),
                         Text(
                           meal.area!,
-                          style: const TextStyle(
-                            color: AppTheme.textHint,
+                          style: TextStyle(
+                            color: AppTheme.textH(context),
                             fontSize: 11,
                           ),
                         ),
@@ -176,9 +176,9 @@ class MealCardHorizontal extends StatelessWidget {
         width: 160,
         margin: const EdgeInsets.only(right: 12),
         decoration: BoxDecoration(
-          color: AppTheme.cardDark,
+          color: AppTheme.card(context),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppTheme.borderDark, width: 0.5),
+          border: Border.all(color: AppTheme.border(context), width: 0.5),
         ),
         clipBehavior: Clip.antiAlias,
         child: Column(
@@ -192,11 +192,11 @@ class MealCardHorizontal extends StatelessWidget {
                       imageUrl: meal.thumbnailUrl!,
                       fit: BoxFit.cover,
                       placeholder: (_, __) =>
-                          Container(color: AppTheme.surfaceDark),
+                          Container(color: AppTheme.surface(context)),
                       errorWidget: (_, __, ___) =>
-                          Container(color: AppTheme.surfaceDark),
+                          Container(color: AppTheme.surface(context)),
                     )
-                  : Container(color: AppTheme.surfaceDark),
+                  : Container(color: AppTheme.surface(context)),
             ),
             Padding(
               padding: const EdgeInsets.all(8),
@@ -205,8 +205,8 @@ class MealCardHorizontal extends StatelessWidget {
                 children: [
                   Text(
                     meal.name,
-                    style: const TextStyle(
-                      color: AppTheme.textPrimary,
+                    style: TextStyle(
+                      color: AppTheme.textP(context),
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
                     ),

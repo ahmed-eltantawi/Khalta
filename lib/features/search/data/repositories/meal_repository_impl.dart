@@ -85,11 +85,45 @@ class MealRepositoryImpl implements MealRepository {
   }
 
   @override
-  Future<List<MealEntity>> filterMealsByIngredients(List<String> ingredients) async {
+  Future<List<MealEntity>> filterMealsByIngredients(
+      List<String> ingredients) async {
     if (ingredients.isEmpty) return [];
-    // Use the first ingredient as primary filter (API limitation)
+    if (ingredients.length == 1) {
+      try {
+        return await _remoteDataSource.searchMealsByIngredient(ingredients.first);
+      } on ServerException {
+        rethrow;
+      }
+    }
+
+    // Fetch a lightweight list (idMeal, strMeal, strMealThumb) for every
+    // ingredient in parallel, then intersect by meal ID.
     try {
-      return await _remoteDataSource.searchMealsByIngredient(ingredients.first);
+      final futures = ingredients
+          .map((i) => _remoteDataSource.searchMealsByIngredient(i))
+          .toList();
+      final results = await Future.wait(futures);
+
+      // Build ID set for the first ingredient
+      var commonIds = results.first.map((m) => m.id).toSet();
+      for (int i = 1; i < results.length; i++) {
+        commonIds = commonIds.intersection(results[i].map((m) => m.id).toSet());
+      }
+
+      // Keep only meals whose ID appears in every set (preserving order)
+      return results.first
+          .where((m) => commonIds.contains(m.id))
+          .toList();
+    } on ServerException {
+      rethrow;
+    }
+  }
+
+
+  @override
+  Future<List<String>> getAllIngredients() async {
+    try {
+      return await _remoteDataSource.getAllIngredients();
     } on ServerException {
       rethrow;
     }
