@@ -446,36 +446,40 @@ class _IngredientConfirmationViewState extends State<_IngredientConfirmationView
                 const SizedBox(height: 8),
                 
                 // Editable Text Field
-                TextField(
-                  controller: _nameController,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: AppTheme.textP(context),
-                    fontSize: 22,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 0.5,
-                  ),
-                  decoration: InputDecoration(
-                    hintText: 'Enter ingredient name',
-                    hintStyle: TextStyle(
-                      color: AppTheme.textH(context),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: TextField(
+                    controller: _nameController,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: AppTheme.textP(context),
                       fontSize: 20,
-                      fontWeight: FontWeight.w500,
+                      fontWeight: FontWeight.w700,
                     ),
-                    border: InputBorder.none,
-                    isDense: true,
-                    contentPadding: EdgeInsets.zero,
-                  ),
-                ),
-                
-                // Underline indicator for editable text
-                Container(
-                  margin: const EdgeInsets.only(top: 4),
-                  height: 2,
-                  width: 120,
-                  decoration: BoxDecoration(
-                    color: AppTheme.border(context),
-                    borderRadius: BorderRadius.circular(2),
+                    decoration: InputDecoration(
+                      hintText: 'Enter ingredient name',
+                      hintStyle: TextStyle(
+                        color: AppTheme.textH(context),
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      filled: true,
+                      fillColor: widget.isDark ? AppTheme.surfaceDark : AppTheme.surfaceLight,
+                      contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                      suffixIcon: Icon(Icons.edit_rounded, color: AppTheme.textH(context), size: 20),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: AppTheme.border(context)),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: AppTheme.border(context)),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(color: AppTheme.primary, width: 2),
+                      ),
+                    ),
                   ),
                 ),
                 

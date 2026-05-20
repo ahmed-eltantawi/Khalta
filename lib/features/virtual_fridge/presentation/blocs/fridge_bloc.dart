@@ -57,9 +57,16 @@ class FridgeLoading extends FridgeState {}
 class FridgeLoaded extends FridgeState {
   final List<FridgeItemEntity> items;
   final List<MealEntity>? suggestedMeals;
-  const FridgeLoaded({required this.items, this.suggestedMeals});
+  final List<MealEntity>? perfectMatches;
+
+  const FridgeLoaded({
+    required this.items, 
+    this.suggestedMeals,
+    this.perfectMatches,
+  });
+
   @override
-  List<Object?> get props => [items, suggestedMeals];
+  List<Object?> get props => [items, suggestedMeals, perfectMatches];
 }
 
 class FridgeError extends FridgeState {
@@ -73,11 +80,11 @@ class FridgeError extends FridgeState {
 
 class FridgeBloc extends Bloc<FridgeEvent, FridgeState> {
   final FridgeLocalDataSource dataSource;
-  final FilterMealsByIngredients filterMealsByIngredients;
+  final SearchMealsByIngredient searchMealsByIngredient;
 
   FridgeBloc({
     required this.dataSource,
-    required this.filterMealsByIngredients,
+    required this.searchMealsByIngredient,
   }) : super(FridgeInitial()) {
     on<LoadFridgeEvent>(_onLoad);
     on<AddFridgeItemEvent>(_onAdd);
@@ -125,11 +132,44 @@ class FridgeBloc extends Bloc<FridgeEvent, FridgeState> {
 
     emit(FridgeLoading());
     try {
-      final ingredientNames = currentItems.map((e) => e.name).toList();
-      final meals = await filterMealsByIngredients(ingredientNames);
-      emit(FridgeLoaded(items: currentItems, suggestedMeals: meals));
+      final ingredientNames = currentItems.map((e) => e.name.toLowerCase()).toList();
+      
+      // Perform parallel searches for each ingredient
+      final futures = ingredientNames.map((ing) => searchMealsByIngredient(ing));
+      final results = await Future.wait(futures);
+      
+      // Calculate perfect matches (intersection) and possible options (union)
+      final Map<String, int> mealCounts = {};
+      final Map<String, MealEntity> mealMap = {};
+
+      for (int i = 0; i < results.length; i++) {
+        final list = results[i];
+        for (final meal in list) {
+          mealMap[meal.id] = meal;
+          mealCounts[meal.id] = (mealCounts[meal.id] ?? 0) + 1;
+        }
+      }
+
+      final int requiredCount = ingredientNames.length;
+      final List<MealEntity> perfect = [];
+      final List<MealEntity> possible = [];
+
+      for (final id in mealCounts.keys) {
+        final meal = mealMap[id]!;
+        if (mealCounts[id] == requiredCount) {
+          perfect.add(meal);
+        } else {
+          possible.add(meal);
+        }
+      }
+      
+      emit(FridgeLoaded(
+        items: currentItems, 
+        suggestedMeals: possible,
+        perfectMatches: perfect,
+      ));
     } catch (e) {
-      emit(FridgeLoaded(items: currentItems));
+      emit(FridgeLoaded(items: currentItems, suggestedMeals: const [], perfectMatches: const []));
     }
   }
 }

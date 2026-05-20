@@ -79,7 +79,7 @@ class CameraCubit extends Cubit<CameraCubitState> {
       _acceptedIngredients = [];
       _showNextConfirmation();
     } catch (e) {
-      emit(CameraError('Failed to analyze image. Please try again.'));
+      emit(CameraError('Failed to analyze image: $e'));
     }
   }
 

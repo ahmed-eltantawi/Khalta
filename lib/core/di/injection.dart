@@ -80,7 +80,7 @@ Future<void> initDependencies() async {
 
   sl.registerFactory(() => FridgeBloc(
         dataSource: sl<FridgeLocalDataSource>(),
-        filterMealsByIngredients: sl<FilterMealsByIngredients>(),
+        searchMealsByIngredient: sl<SearchMealsByIngredient>(),
       ));
 
   sl.registerFactory(() => SavedRecipesCubit(sl<SavedRecipesDataSource>()));

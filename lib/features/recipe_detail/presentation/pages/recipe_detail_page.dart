@@ -7,6 +7,7 @@ import '../../../../core/theme/app_theme.dart';
 import '../../../../features/search/domain/entities/meal_entity.dart';
 import '../../../../features/search/domain/usecases/meal_usecases.dart';
 import '../../../../features/saved_recipes/presentation/pages/saved_recipes_cubit.dart';
+import '../../../../features/virtual_fridge/data/datasources/fridge_local_datasource.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class RecipeDetailPage extends StatefulWidget {
@@ -24,17 +25,28 @@ class _RecipeDetailPageState extends State<RecipeDetailPage>
   late TabController _tabController;
   MealEntity? _meal;
   bool _loading = true;
+  List<String> _fridgeIngredientNames = [];
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+    _loadFridgeItems();
     if (widget.initialMeal?.instructions != null) {
       _meal = widget.initialMeal;
       _loading = false;
     } else {
       _loadMeal();
     }
+  }
+
+  Future<void> _loadFridgeItems() async {
+    try {
+      final items = sl<FridgeLocalDataSource>().getAll();
+      setState(() {
+        _fridgeIngredientNames = items.map((e) => e.name.toLowerCase()).toList();
+      });
+    } catch (_) {}
   }
 
   Future<void> _loadMeal() async {
@@ -211,7 +223,7 @@ class _RecipeDetailPageState extends State<RecipeDetailPage>
           child: TabBarView(
             controller: _tabController,
             children: [
-              _IngredientsTab(meal: meal),
+              _IngredientsTab(meal: meal, fridgeIngredients: _fridgeIngredientNames),
               _InstructionsTab(meal: meal),
               _NutritionTab(meal: meal),
             ],
@@ -245,7 +257,8 @@ class _RecipeDetailPageState extends State<RecipeDetailPage>
 
 class _IngredientsTab extends StatelessWidget {
   final MealEntity meal;
-  const _IngredientsTab({required this.meal});
+  final List<String> fridgeIngredients;
+  const _IngredientsTab({required this.meal, required this.fridgeIngredients});
 
   @override
   Widget build(BuildContext context) {
@@ -255,6 +268,12 @@ class _IngredientsTab extends StatelessWidget {
       itemCount: pairs.length,
       itemBuilder: (_, i) {
         final ing = pairs[i];
+        final ingNameLower = ing.key.toLowerCase();
+        
+        // Simple matching logic
+        final isMissing = !fridgeIngredients.any((f) => 
+            ingNameLower.contains(f) || f.contains(ingNameLower));
+
         return Container(
           margin: const EdgeInsets.only(bottom: 8),
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
@@ -269,21 +288,37 @@ class _IngredientsTab extends StatelessWidget {
                 width: 36,
                 height: 36,
                 decoration: BoxDecoration(
-                  color: AppTheme.primary.withValues(alpha: 0.15),
+                  color: isMissing 
+                      ? AppTheme.textHint.withValues(alpha: 0.1) 
+                      : AppTheme.success.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: const Icon(Icons.local_dining_rounded,
-                    color: AppTheme.primary, size: 18),
+                child: Icon(
+                  isMissing ? Icons.cancel_outlined : Icons.check_circle_outline_rounded,
+                  color: isMissing ? AppTheme.textHint : AppTheme.success, 
+                  size: 18
+                ),
               ),
               const SizedBox(width: 12),
               Expanded(
-                child: Text(
-                  ing.key,
-                  style: TextStyle(
-                    color: AppTheme.textP(context),
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                  ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      ing.key,
+                      style: TextStyle(
+                        color: AppTheme.textP(context),
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        decoration: isMissing ? TextDecoration.lineThrough : null,
+                      ),
+                    ),
+                    if (isMissing)
+                      Text(
+                        'Missing',
+                        style: TextStyle(color: AppTheme.error, fontSize: 10),
+                      ),
+                  ],
                 ),
               ),
               Text(
@@ -459,7 +494,7 @@ class _NutritionTab extends StatelessWidget {
                   child: LinearProgressIndicator(
                     value: item.percent.clamp(0.0, 1.0),
                     backgroundColor: AppTheme.border(context),
-                    valueColor: AlwaysStoppedAnimation(item.color),
+                    valueColor: AlwaysStoppedAnimation<Color>(item.color),
                     minHeight: 5,
                   ),
                 ),

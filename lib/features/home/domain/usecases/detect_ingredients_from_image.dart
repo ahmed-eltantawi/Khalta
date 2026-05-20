@@ -1,48 +1,45 @@
-import 'package:google_mlkit_image_labeling/google_mlkit_image_labeling.dart';
+import 'dart:io';
+import 'package:google_generative_ai/google_generative_ai.dart';
+import '../../../../core/constants/api_constants.dart';
 
 class DetectIngredientsFromImage {
-  // Pre-defined set of known food/ingredient labels to filter out non-food noise
-  static const Set<String> _foodLabels = {
-    'chicken', 'beef', 'fish', 'egg',
-    'tomato', 'potato', 'onion', 'garlic', 'carrot', 'apple', 'banana', 'orange',
-    'cheese', 'bread', 'pasta', 'rice', 'milk', 'pepper', 'salt', 'sugar',
-    'butter', 'oil', 'lemon', 'lime', 'strawberry', 'blueberry', 'broccoli',
-    'spinach', 'lettuce', 'cucumber', 'mushroom', 'corn', 'beans', 'pork',
-    'shrimp', 'salmon', 'avocado', 'ginger', 'honey', 'flour', 'yogurt',
-  };
-
   Future<List<String>> call(String imagePath) async {
-    final inputImage = InputImage.fromFilePath(imagePath);
-    final imageLabeler = ImageLabeler(options: ImageLabelerOptions());
-    
     try {
-      final List<ImageLabel> labels = await imageLabeler.processImage(inputImage);
+      final file = File(imagePath);
+      final bytes = await file.readAsBytes();
       
-      final Set<String> detectedIngredients = {};
-      
-      for (ImageLabel label in labels) {
-        final text = label.label.toLowerCase();
-        
-        // Very basic filtering: keep it if it's in our known list and has >60% confidence
-        if (label.confidence > 0.6) {
-          if (_foodLabels.contains(text)) {
-             detectedIngredients.add(text);
-          } else {
-             // Let's also check if any word matches
-             for (final word in text.split(' ')) {
-                if (_foodLabels.contains(word)) {
-                   detectedIngredients.add(word);
-                }
-             }
-          }
-        }
-      }
-      
-      imageLabeler.close();
-      return detectedIngredients.toList();
+      final model = GenerativeModel(
+        model: 'gemini-2.5-flash',
+        apiKey: ApiConstants.geminiApiKey,
+      );
+
+      final prompt = TextPart(
+        'Identify the raw food ingredients in this image. '
+        'Return ONLY specific ingredient names in singular form (e.g., "tomato", "onion", "banana", "chicken"). '
+        'Do NOT return broad categories. "fruit", "vegetable", "food", or "ingredient" are INCORRECT. '
+        'The output should be clean and ingredient-focused only. '
+        'Return up to 3 ingredients separated by commas. If no food is detected, return an empty string.'
+      );
+      final ext = imagePath.split('.').last.toLowerCase();
+      final mime = ext == 'png' ? 'image/png' : 'image/jpeg';
+      final imagePart = DataPart(mime, bytes);
+
+      final response = await model.generateContent([
+        Content.multi([prompt, imagePart])
+      ]);
+
+      final text = response.text?.trim() ?? '';
+      if (text.isEmpty) return [];
+
+      final ingredients = text
+          .split(',')
+          .map((s) => s.trim().toLowerCase())
+          .where((s) => s.isNotEmpty)
+          .toList();
+
+      return ingredients;
     } catch (e) {
-      imageLabeler.close();
-      throw Exception('Failed to detect ingredients: $e');
+      throw Exception('Failed to detect ingredients via Gemini: $e');
     }
   }
 }

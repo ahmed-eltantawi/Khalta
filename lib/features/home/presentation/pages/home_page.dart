@@ -78,6 +78,41 @@ class HomePage extends StatelessWidget {
                     SliverToBoxAdapter(
                       child: _buildError(context, state.message),
                     ),
+                  // ── From Your Fridge ──────────────────────────────────────
+                  SliverToBoxAdapter(
+                    child: _buildSectionTitle(context, "From Your Fridge", onSeeAll: () => context.go('/fridge')),
+                  ),
+                  SliverToBoxAdapter(
+                    child: BlocProvider(
+                      create: (_) => sl<FridgeBloc>()..add(const LoadFridgeEvent())..add(const SearchRecipesFromFridgeEvent()),
+                      child: BlocBuilder<FridgeBloc, FridgeState>(
+                        builder: (context, fridgeState) {
+                          if (fridgeState is FridgeLoading) {
+                            return const Center(child: Padding(
+                              padding: EdgeInsets.all(20.0),
+                              child: CircularProgressIndicator(color: AppTheme.primary),
+                            ));
+                          }
+                          if (fridgeState is FridgeLoaded) {
+                            final List<MealEntity> allMatches = [];
+                            if (fridgeState.perfectMatches != null) allMatches.addAll(fridgeState.perfectMatches!);
+                            if (fridgeState.suggestedMeals != null) allMatches.addAll(fridgeState.suggestedMeals!);
+                            
+                            if (allMatches.isNotEmpty) {
+                              return _buildSuggestions(allMatches.take(8).toList());
+                            } else {
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                                child: Text('Add ingredients to your fridge to see matching recipes here.',
+                                  style: TextStyle(color: AppTheme.textS(context))),
+                              );
+                            }
+                          }
+                          return const SizedBox.shrink();
+                        },
+                      ),
+                    ),
+                  ),
                   const SliverToBoxAdapter(child: SizedBox(height: 24)),
                 ],
               ),

@@ -11,6 +11,7 @@ import '../../../../core/di/injection.dart';
 import '../../../../features/virtual_fridge/domain/entities/fridge_item_entity.dart';
 import '../../../../features/virtual_fridge/presentation/blocs/fridge_bloc.dart';
 import '../../../../features/search/presentation/widgets/meal_card.dart';
+import '../../../../features/search/domain/usecases/meal_usecases.dart';
 import '../../../../core/widgets/app_widgets.dart';
 import '../../../../features/home/presentation/cubits/camera_cubit.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -160,26 +161,71 @@ class _ItemsTab extends StatelessWidget {
                 ),
               ),
             ),
-            if (state.suggestedMeals != null && state.suggestedMeals!.isNotEmpty) ...[
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 12),
-                  child: Text('Recipes You Can Make',
-                    style: TextStyle(color: AppTheme.textP(context), fontSize: 17, fontWeight: FontWeight.w600)),
-                ),
-              ),
-              SliverPadding(
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                sliver: SliverGrid(
-                  delegate: SliverChildBuilderDelegate(
-                    (ctx, i) => MealCard(meal: state.suggestedMeals![i], index: i),
-                    childCount: state.suggestedMeals!.length.clamp(0, 10),
+            if (state.suggestedMeals != null && state.perfectMatches != null) ...[
+              if (state.suggestedMeals!.isEmpty && state.perfectMatches!.isEmpty)
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 16),
+                    child: Center(
+                      child: Column(
+                        children: [
+                          const Icon(Icons.restaurant_menu_rounded, size: 48, color: Colors.grey),
+                          const SizedBox(height: 16),
+                          Text('No meals available', 
+                            style: TextStyle(color: AppTheme.textP(context), fontSize: 16, fontWeight: FontWeight.w600)),
+                          const SizedBox(height: 4),
+                          Text('Try adding more varied ingredients to your fridge.', 
+                            textAlign: TextAlign.center,
+                            style: TextStyle(color: AppTheme.textS(context), fontSize: 14)),
+                        ],
+                      ),
+                    ),
                   ),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2, crossAxisSpacing: 12, mainAxisSpacing: 12, childAspectRatio: 0.75,
+                )
+              else ...[
+                if (state.perfectMatches!.isNotEmpty) ...[
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 20, 20, 12),
+                      child: Text('Perfect Matches (All Ingredients)',
+                        style: TextStyle(color: AppTheme.textP(context), fontSize: 17, fontWeight: FontWeight.w600)),
+                    ),
                   ),
-                ),
-              ),
+                  SliverPadding(
+                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                    sliver: SliverGrid(
+                      delegate: SliverChildBuilderDelegate(
+                        (ctx, i) => MealCard(meal: state.perfectMatches![i], index: i),
+                        childCount: state.perfectMatches!.length,
+                      ),
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2, crossAxisSpacing: 12, mainAxisSpacing: 12, childAspectRatio: 0.75,
+                      ),
+                    ),
+                  ),
+                ],
+                if (state.suggestedMeals!.isNotEmpty) ...[
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 20, 20, 12),
+                      child: Text('Possible Options (Any Ingredient)',
+                        style: TextStyle(color: AppTheme.textP(context), fontSize: 17, fontWeight: FontWeight.w600)),
+                    ),
+                  ),
+                  SliverPadding(
+                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                    sliver: SliverGrid(
+                      delegate: SliverChildBuilderDelegate(
+                        (ctx, i) => MealCard(meal: state.suggestedMeals![i], index: i),
+                        childCount: state.suggestedMeals!.length.clamp(0, 20), // limit to 20
+                      ),
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2, crossAxisSpacing: 12, mainAxisSpacing: 12, childAspectRatio: 0.75,
+                      ),
+                    ),
+                  ),
+                ],
+              ],
             ],
             const SliverToBoxAdapter(child: SizedBox(height: 24)),
           ]);
@@ -715,11 +761,29 @@ class _AddItemSheet extends StatefulWidget {
 }
 
 class _AddItemSheetState extends State<_AddItemSheet> {
-  final _nameCtrl = TextEditingController();
   final _qtyCtrl = TextEditingController(text: '1');
   String _unit = 'piece';
   DateTime? _expiry;
   final _units = ['piece', 'g', 'kg', 'ml', 'L', 'cup', 'tbsp', 'tsp'];
+  List<String> _allIngredients = [];
+  TextEditingController? _autocompleteCtrl;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadIngredients();
+  }
+
+  Future<void> _loadIngredients() async {
+    try {
+      final ingredients = await sl<GetAllIngredients>()();
+      if (mounted) {
+        setState(() {
+          _allIngredients = ingredients;
+        });
+      }
+    } catch (_) {}
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -728,9 +792,62 @@ class _AddItemSheetState extends State<_AddItemSheet> {
       child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
         Text('Add Ingredient', style: TextStyle(color: AppTheme.textP(context), fontSize: 18, fontWeight: FontWeight.w600)),
         const SizedBox(height: 16),
-        TextField(controller: _nameCtrl, autofocus: true,
-          style: TextStyle(color: AppTheme.textP(context)),
-          decoration: InputDecoration(labelText: 'Ingredient name', labelStyle: TextStyle(color: AppTheme.textH(context)))),
+        Autocomplete<String>(
+          optionsBuilder: (TextEditingValue textEditingValue) {
+            if (textEditingValue.text.isEmpty) {
+              return const Iterable<String>.empty();
+            }
+            return _allIngredients.where((String option) {
+              return option.toLowerCase().contains(textEditingValue.text.toLowerCase());
+            });
+          },
+          onSelected: (String selection) {
+            // Handled automatically by Autocomplete textEditingController
+          },
+          fieldViewBuilder: (context, textEditingController, focusNode, onFieldSubmitted) {
+            _autocompleteCtrl = textEditingController;
+            return TextField(
+              controller: textEditingController,
+              focusNode: focusNode,
+              autofocus: true,
+              style: TextStyle(color: AppTheme.textP(context)),
+              decoration: InputDecoration(
+                labelText: 'Ingredient name',
+                labelStyle: TextStyle(color: AppTheme.textH(context)),
+              ),
+              onSubmitted: (String value) {
+                onFieldSubmitted();
+              },
+            );
+          },
+          optionsViewBuilder: (context, onSelected, options) {
+            return Align(
+              alignment: Alignment.topLeft,
+              child: Material(
+                color: AppTheme.card(context),
+                elevation: 4.0,
+                borderRadius: BorderRadius.circular(8),
+                child: SizedBox(
+                  height: 200.0,
+                  width: MediaQuery.of(context).size.width - 40, // Match modal padding
+                  child: ListView.builder(
+                    padding: const EdgeInsets.all(8.0),
+                    itemCount: options.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      final String option = options.elementAt(index);
+                      return ListTile(
+                        title: Text(option, style: TextStyle(color: AppTheme.textP(context))),
+                        onTap: () {
+                          onSelected(option);
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ),
+            );
+          },
+        ),
         const SizedBox(height: 12),
         Row(children: [
           Expanded(child: TextField(controller: _qtyCtrl, keyboardType: TextInputType.number,
@@ -750,8 +867,9 @@ class _AddItemSheetState extends State<_AddItemSheet> {
         const SizedBox(height: 20),
         SizedBox(width: double.infinity, child: ElevatedButton(
           onPressed: () {
-            if (_nameCtrl.text.trim().isEmpty) return;
-            final item = FridgeItemEntity(id: const Uuid().v4(), name: _nameCtrl.text.trim(),
+            final text = _autocompleteCtrl?.text.trim() ?? '';
+            if (text.isEmpty) return;
+            final item = FridgeItemEntity(id: const Uuid().v4(), name: text,
               quantity: _qtyCtrl.text.trim(), unit: _unit, expiryDate: _expiry, addedAt: DateTime.now());
             context.read<FridgeBloc>().add(AddFridgeItemEvent(item));
             Navigator.pop(context);

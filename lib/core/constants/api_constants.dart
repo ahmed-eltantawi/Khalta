@@ -18,4 +18,7 @@ class ApiConstants {
 
   static String ingredientImageUrl(String ingredient) =>
       '$ingredientImageBase${ingredient.replaceAll(' ', '%20')}-Small.png';
+
+  // Gemini API Key
+  static const String geminiApiKey = 'AIzaSyCktTYm7a2bIEw2sHlirm_8wECtqtxdU9E';
 }
