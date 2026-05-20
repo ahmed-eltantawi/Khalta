@@ -200,11 +200,14 @@ class _RecipeDetailPageState extends State<RecipeDetailPage>
                   ),
                   child: TabBar(
                     controller: _tabController,
+                    indicatorSize: TabBarIndicatorSize.tab,
+                    indicatorPadding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
                     indicator: BoxDecoration(
                       color: AppTheme.primary,
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(8),
                     ),
                     labelColor: Colors.white,
+                    labelPadding: const EdgeInsets.symmetric(horizontal: 8),
                     unselectedLabelColor: AppTheme.textS(context),
                     dividerColor: Colors.transparent,
                     tabs: const [

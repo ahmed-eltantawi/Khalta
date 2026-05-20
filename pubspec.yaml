@@ -61,6 +61,7 @@ dev_dependencies:
   flutter_lints: ^4.0.0
   bloc_test: ^9.1.7
   mocktail: ^1.0.4
+  flutter_launcher_icons: ^0.14.4
 
 flutter:
   uses-material-design: true
@@ -68,3 +69,11 @@ flutter:
   assets:
     - assets/animations/
     - assets/images/
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/app_icon_padded.png"
+  adaptive_icon_background: "assets/images/app_icon_padded.png"
+  adaptive_icon_foreground: "assets/images/transparent.png"
+
