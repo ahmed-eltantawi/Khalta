@@ -44,13 +44,15 @@ class AppButton extends StatelessWidget {
     if (outlined) {
       return SizedBox(
         width: width,
-        child: OutlinedButton(onPressed: isLoading ? null : onPressed, child: child),
+        child: OutlinedButton(
+            onPressed: isLoading ? null : onPressed, child: child),
       );
     }
 
     return SizedBox(
       width: width,
-      child: ElevatedButton(onPressed: isLoading ? null : onPressed, child: child),
+      child:
+          ElevatedButton(onPressed: isLoading ? null : onPressed, child: child),
     );
   }
 }
@@ -61,7 +63,8 @@ class AppSnackBar {
       SnackBar(
         content: Row(
           children: [
-            const Icon(Icons.check_circle_rounded, color: AppTheme.success, size: 20),
+            const Icon(Icons.check_circle_rounded,
+                color: AppTheme.success, size: 20),
             const SizedBox(width: 10),
             Expanded(child: Text(message)),
           ],

@@ -34,7 +34,8 @@ class _CameraScanSheetState extends State<CameraScanSheet> {
     try {
       final cameras = await availableCameras();
       if (cameras.isEmpty) return;
-      _controller = CameraController(cameras.first, ResolutionPreset.medium, enableAudio: false);
+      _controller = CameraController(cameras.first, ResolutionPreset.medium,
+          enableAudio: false);
       await _controller!.initialize();
       if (mounted) setState(() => _isCameraInitialized = true);
     } catch (e) {
@@ -62,7 +63,8 @@ class _CameraScanSheetState extends State<CameraScanSheet> {
 
   void _pickFromGallery() async {
     try {
-      final picked = await _picker.pickImage(source: ImageSource.gallery, maxWidth: 1024);
+      final picked =
+          await _picker.pickImage(source: ImageSource.gallery, maxWidth: 1024);
       if (picked != null && mounted) {
         context.read<CameraCubit>().scanImage(picked.path);
       }
@@ -175,7 +177,8 @@ class _CameraScanSheetState extends State<CameraScanSheet> {
                           width: 250,
                           height: 250,
                           decoration: BoxDecoration(
-                            border: Border.all(color: AppTheme.primary, width: 2),
+                            border:
+                                Border.all(color: AppTheme.primary, width: 2),
                             borderRadius: BorderRadius.circular(24),
                           ),
                         ),
@@ -272,16 +275,19 @@ class _IngredientConfirmationView extends StatefulWidget {
   });
 
   @override
-  State<_IngredientConfirmationView> createState() => _IngredientConfirmationViewState();
+  State<_IngredientConfirmationView> createState() =>
+      _IngredientConfirmationViewState();
 }
 
-class _IngredientConfirmationViewState extends State<_IngredientConfirmationView> {
+class _IngredientConfirmationViewState
+    extends State<_IngredientConfirmationView> {
   late TextEditingController _nameController;
 
   @override
   void initState() {
     super.initState();
-    _nameController = TextEditingController(text: widget.state.currentIngredient);
+    _nameController =
+        TextEditingController(text: widget.state.currentIngredient);
   }
 
   @override
@@ -397,7 +403,8 @@ class _IngredientConfirmationViewState extends State<_IngredientConfirmationView
               border: Border.all(color: AppTheme.border(context), width: 0.5),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: widget.isDark ? 0.2 : 0.05),
+                  color: Colors.black
+                      .withValues(alpha: widget.isDark ? 0.2 : 0.05),
                   blurRadius: 12,
                   offset: const Offset(0, 4),
                 ),
@@ -410,7 +417,8 @@ class _IngredientConfirmationViewState extends State<_IngredientConfirmationView
                   ClipRRect(
                     borderRadius: BorderRadius.circular(12),
                     child: Image.network(
-                      ApiConstants.ingredientImageUrl(widget.state.currentIngredient),
+                      ApiConstants.ingredientImageUrl(
+                          widget.state.currentIngredient),
                       width: 64,
                       height: 64,
                       fit: BoxFit.cover,
@@ -438,13 +446,14 @@ class _IngredientConfirmationViewState extends State<_IngredientConfirmationView
                         size: 32, color: AppTheme.warning),
                   ),
                 const SizedBox(height: 12),
-                
+
                 Text(
                   isUnknown ? "We couldn't recognize this item" : 'I see a',
-                  style: TextStyle(color: AppTheme.textS(context), fontSize: 14),
+                  style:
+                      TextStyle(color: AppTheme.textS(context), fontSize: 14),
                 ),
                 const SizedBox(height: 8),
-                
+
                 // Editable Text Field
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -464,9 +473,13 @@ class _IngredientConfirmationViewState extends State<_IngredientConfirmationView
                         fontWeight: FontWeight.w500,
                       ),
                       filled: true,
-                      fillColor: widget.isDark ? AppTheme.surfaceDark : AppTheme.surfaceLight,
-                      contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                      suffixIcon: Icon(Icons.edit_rounded, color: AppTheme.textH(context), size: 20),
+                      fillColor: widget.isDark
+                          ? AppTheme.surfaceDark
+                          : AppTheme.surfaceLight,
+                      contentPadding: const EdgeInsets.symmetric(
+                          vertical: 12, horizontal: 16),
+                      suffixIcon: Icon(Icons.edit_rounded,
+                          color: AppTheme.textH(context), size: 20),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide(color: AppTheme.border(context)),
@@ -477,16 +490,18 @@ class _IngredientConfirmationViewState extends State<_IngredientConfirmationView
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(color: AppTheme.primary, width: 2),
+                        borderSide:
+                            const BorderSide(color: AppTheme.primary, width: 2),
                       ),
                     ),
                   ),
                 ),
-                
+
                 const SizedBox(height: 12),
                 Text(
                   'Should I add it to your fridge?',
-                  style: TextStyle(color: AppTheme.textS(context), fontSize: 14),
+                  style:
+                      TextStyle(color: AppTheme.textS(context), fontSize: 14),
                 ),
               ],
             ),
@@ -523,7 +538,8 @@ class _IngredientConfirmationViewState extends State<_IngredientConfirmationView
                   onPressed: () {
                     final name = _nameController.text.trim();
                     if (name.isEmpty) {
-                      AppSnackBar.showError(context, 'Please enter a name first');
+                      AppSnackBar.showError(
+                          context, 'Please enter a name first');
                       return;
                     }
                     widget.onAdd(name);

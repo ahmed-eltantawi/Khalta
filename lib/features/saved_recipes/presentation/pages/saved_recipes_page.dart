@@ -53,7 +53,8 @@ class SavedRecipesPage extends StatelessWidget {
                           Text(
                             'Tap the heart icon on any recipe\nto save it here.',
                             textAlign: TextAlign.center,
-                            style: TextStyle(color: AppTheme.textS(context), height: 1.5),
+                            style: TextStyle(
+                                color: AppTheme.textS(context), height: 1.5),
                           ),
                         ],
                       ),
@@ -93,8 +94,7 @@ class _SavedMealRow extends StatelessWidget {
         color: AppTheme.error.withValues(alpha: 0.8),
         child: const Icon(Icons.delete_rounded, color: Colors.white),
       ),
-      onDismissed: (_) =>
-          context.read<SavedRecipesCubit>().toggleSave(meal),
+      onDismissed: (_) => context.read<SavedRecipesCubit>().toggleSave(meal),
       child: GestureDetector(
         onTap: () => context.push('/recipe/${meal.id}', extra: meal),
         child: Container(
@@ -107,7 +107,8 @@ class _SavedMealRow extends StatelessWidget {
           child: Row(
             children: [
               ClipRRect(
-                borderRadius: const BorderRadius.horizontal(left: Radius.circular(15)),
+                borderRadius:
+                    const BorderRadius.horizontal(left: Radius.circular(15)),
                 child: meal.thumbnailUrl != null
                     ? Image.network(
                         meal.thumbnailUrl!,
@@ -125,13 +126,15 @@ class _SavedMealRow extends StatelessWidget {
                         width: 90,
                         height: 90,
                         color: AppTheme.surface(context),
-                        child: const Icon(Icons.restaurant, color: AppTheme.textHint),
+                        child: const Icon(Icons.restaurant,
+                            color: AppTheme.textHint),
                       ),
               ),
               const SizedBox(width: 12),
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [

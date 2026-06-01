@@ -26,7 +26,8 @@ class _VoiceScanSheetState extends State<VoiceScanSheet> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final bgColor = isDark ? AppTheme.cardDark : AppTheme.cardLight;
     final textColor = isDark ? AppTheme.textPrimary : AppTheme.textPrimaryLight;
-    final subColor = isDark ? AppTheme.textSecondary : AppTheme.textSecondaryLight;
+    final subColor =
+        isDark ? AppTheme.textSecondary : AppTheme.textSecondaryLight;
 
     return Container(
       constraints: const BoxConstraints(minHeight: 400),
@@ -52,7 +53,8 @@ class _VoiceScanSheetState extends State<VoiceScanSheet> {
               children: [
                 // ── Handle bar ──────────────────────────────────────────
                 Container(
-                  width: 40, height: 4,
+                  width: 40,
+                  height: 4,
                   decoration: BoxDecoration(
                     color: isDark ? AppTheme.borderDark : AppTheme.borderLight,
                     borderRadius: BorderRadius.circular(2),
@@ -63,7 +65,10 @@ class _VoiceScanSheetState extends State<VoiceScanSheet> {
                 // ── Title ───────────────────────────────────────────────
                 Text(
                   _title(state),
-                  style: TextStyle(color: textColor, fontSize: 20, fontWeight: FontWeight.w600),
+                  style: TextStyle(
+                      color: textColor,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600),
                 ),
                 const SizedBox(height: 6),
                 Text(
@@ -75,7 +80,9 @@ class _VoiceScanSheetState extends State<VoiceScanSheet> {
                 const SizedBox(height: 32),
 
                 // ── Mic Animation ───────────────────────────────────────
-                if (state is VoiceInitializing || state is VoiceListening || state is VoiceIdle)
+                if (state is VoiceInitializing ||
+                    state is VoiceListening ||
+                    state is VoiceIdle)
                   _buildMicSection(state, isDark),
 
                 // ── Live Transcription ──────────────────────────────────
@@ -86,9 +93,12 @@ class _VoiceScanSheetState extends State<VoiceScanSheet> {
                       width: double.infinity,
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: isDark ? AppTheme.surfaceDark : AppTheme.backgroundLight,
+                        color: isDark
+                            ? AppTheme.surfaceDark
+                            : AppTheme.backgroundLight,
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: AppTheme.primary.withValues(alpha: 0.3)),
+                        border: Border.all(
+                            color: AppTheme.primary.withValues(alpha: 0.3)),
                       ),
                       child: Text(
                         '"${state.partialText}"',
@@ -109,12 +119,17 @@ class _VoiceScanSheetState extends State<VoiceScanSheet> {
                     width: double.infinity,
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: isDark ? AppTheme.surfaceDark : AppTheme.backgroundLight,
+                      color: isDark
+                          ? AppTheme.surfaceDark
+                          : AppTheme.backgroundLight,
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
                       '"${state.rawText}"',
-                      style: TextStyle(color: subColor, fontSize: 13, fontStyle: FontStyle.italic),
+                      style: TextStyle(
+                          color: subColor,
+                          fontSize: 13,
+                          fontStyle: FontStyle.italic),
                       textAlign: TextAlign.center,
                     ),
                   ),
@@ -122,12 +137,18 @@ class _VoiceScanSheetState extends State<VoiceScanSheet> {
                   Wrap(
                     spacing: 8,
                     runSpacing: 8,
-                    children: state.ingredients.map((ing) => Chip(
-                      avatar: const Icon(Icons.check_circle_rounded, color: AppTheme.success, size: 16),
-                      label: Text(ing),
-                      backgroundColor: AppTheme.success.withValues(alpha: 0.15),
-                      side: BorderSide(color: AppTheme.success.withValues(alpha: 0.3)),
-                    )).toList(),
+                    children: state.ingredients
+                        .map((ing) => Chip(
+                              avatar: const Icon(Icons.check_circle_rounded,
+                                  color: AppTheme.success, size: 16),
+                              label: Text(ing),
+                              backgroundColor:
+                                  AppTheme.success.withValues(alpha: 0.15),
+                              side: BorderSide(
+                                  color:
+                                      AppTheme.success.withValues(alpha: 0.3)),
+                            ))
+                        .toList(),
                   ),
                   const SizedBox(height: 20),
                   Row(
@@ -145,7 +166,8 @@ class _VoiceScanSheetState extends State<VoiceScanSheet> {
                       const SizedBox(width: 12),
                       Expanded(
                         child: ElevatedButton.icon(
-                          onPressed: () => Navigator.pop(context, state.ingredients),
+                          onPressed: () =>
+                              Navigator.pop(context, state.ingredients),
                           icon: const Icon(Icons.check_rounded, size: 18),
                           label: const Text('Use These'),
                         ),
@@ -157,14 +179,16 @@ class _VoiceScanSheetState extends State<VoiceScanSheet> {
                 // ── Error state ─────────────────────────────────────────
                 if (state is VoiceError) ...[
                   const SizedBox(height: 8),
-                  const Icon(Icons.mic_off_rounded, size: 56, color: AppTheme.error),
+                  const Icon(Icons.mic_off_rounded,
+                      size: 56, color: AppTheme.error),
                   const SizedBox(height: 12),
                   Text(state.message,
                       textAlign: TextAlign.center,
                       style: TextStyle(color: subColor, fontSize: 13)),
                   const SizedBox(height: 16),
                   ElevatedButton.icon(
-                    onPressed: () => context.read<VoiceCubit>().startListening(),
+                    onPressed: () =>
+                        context.read<VoiceCubit>().startListening(),
                     icon: const Icon(Icons.refresh_rounded, size: 18),
                     label: const Text('Try Again'),
                   ),
@@ -217,13 +241,15 @@ class _VoiceScanSheetState extends State<VoiceScanSheet> {
           size: 48,
           color: isListening ? AppTheme.primary : AppTheme.textHint,
         ),
-      ).animate(
-        onPlay: isListening ? (c) => c.repeat(reverse: true) : null,
-      ).scale(
-        begin: const Offset(1, 1),
-        end: isListening ? const Offset(1.15, 1.15) : const Offset(1, 1),
-        duration: 800.ms,
-      ),
+      )
+          .animate(
+            onPlay: isListening ? (c) => c.repeat(reverse: true) : null,
+          )
+          .scale(
+            begin: const Offset(1, 1),
+            end: isListening ? const Offset(1.15, 1.15) : const Offset(1, 1),
+            duration: 800.ms,
+          ),
     );
   }
 

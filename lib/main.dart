@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'core/di/injection.dart';
 import 'core/navigation/app_router.dart';
@@ -14,6 +15,9 @@ import 'features/saved_recipes/presentation/pages/saved_recipes_cubit.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Load environment variables
+  await dotenv.load(fileName: '.env');
 
   // System UI
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(

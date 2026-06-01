@@ -30,7 +30,11 @@ class MealCardSkeleton extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(height: 14, width: double.infinity, color: Colors.white, margin: const EdgeInsets.only(bottom: 8)),
+                  Container(
+                      height: 14,
+                      width: double.infinity,
+                      color: Colors.white,
+                      margin: const EdgeInsets.only(bottom: 8)),
                   Container(height: 11, width: 80, color: Colors.white),
                 ],
               ),

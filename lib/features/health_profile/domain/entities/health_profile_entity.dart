@@ -2,7 +2,7 @@ import 'package:equatable/equatable.dart';
 
 class HealthProfileEntity extends Equatable {
   final List<String> dietaryPreferences; // vegetarian, vegan, gluten-free, etc.
-  final List<String> healthConditions;   // diabetes, high-bp, weight-loss, etc.
+  final List<String> healthConditions; // diabetes, high-bp, weight-loss, etc.
   final int dailyCalorieTarget;
 
   static const List<String> availableDiets = [
@@ -25,8 +25,36 @@ class HealthProfileEntity extends Equatable {
 
   // Ingredient exclusions per diet
   static const Map<String, List<String>> dietExclusions = {
-    'Vegetarian': ['chicken', 'beef', 'pork', 'lamb', 'turkey', 'bacon', 'ham', 'fish', 'salmon', 'tuna'],
-    'Vegan': ['chicken', 'beef', 'pork', 'lamb', 'turkey', 'bacon', 'ham', 'fish', 'salmon', 'tuna', 'egg', 'milk', 'cheese', 'butter', 'cream', 'honey'],
+    'Vegetarian': [
+      'chicken',
+      'beef',
+      'pork',
+      'lamb',
+      'turkey',
+      'bacon',
+      'ham',
+      'fish',
+      'salmon',
+      'tuna'
+    ],
+    'Vegan': [
+      'chicken',
+      'beef',
+      'pork',
+      'lamb',
+      'turkey',
+      'bacon',
+      'ham',
+      'fish',
+      'salmon',
+      'tuna',
+      'egg',
+      'milk',
+      'cheese',
+      'butter',
+      'cream',
+      'honey'
+    ],
     'Gluten-Free': ['flour', 'wheat', 'barley', 'rye', 'pasta', 'bread'],
     'Dairy-Free': ['milk', 'cheese', 'butter', 'cream', 'yogurt'],
     'Keto': ['sugar', 'flour', 'rice', 'pasta', 'bread', 'potato'],
@@ -39,7 +67,8 @@ class HealthProfileEntity extends Equatable {
   });
 
   @override
-  List<Object?> get props => [dietaryPreferences, healthConditions, dailyCalorieTarget];
+  List<Object?> get props =>
+      [dietaryPreferences, healthConditions, dailyCalorieTarget];
 
   HealthProfileEntity copyWith({
     List<String>? dietaryPreferences,

@@ -45,18 +45,21 @@ class MealCard extends StatelessWidget {
                           placeholder: (_, __) => Container(
                             color: AppTheme.surface(context),
                             child: const Center(
-                              child: Icon(Icons.restaurant, color: AppTheme.textHint, size: 32),
+                              child: Icon(Icons.restaurant,
+                                  color: AppTheme.textHint, size: 32),
                             ),
                           ),
                           errorWidget: (_, __, ___) => Container(
                             color: AppTheme.surface(context),
-                            child: const Icon(Icons.broken_image, color: AppTheme.textHint),
+                            child: const Icon(Icons.broken_image,
+                                color: AppTheme.textHint),
                           ),
                         )
                       : Container(
                           color: AppTheme.surface(context),
                           child: const Center(
-                            child: Icon(Icons.restaurant, color: AppTheme.textHint, size: 32),
+                            child: Icon(Icons.restaurant,
+                                color: AppTheme.textHint, size: 32),
                           ),
                         ),
                 ),
@@ -67,7 +70,10 @@ class MealCard extends StatelessWidget {
                       gradient: LinearGradient(
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
-                        colors: [Colors.transparent, Colors.black.withValues(alpha: 0.4)],
+                        colors: [
+                          Colors.transparent,
+                          Colors.black.withValues(alpha: 0.4)
+                        ],
                       ),
                     ),
                   ),
@@ -86,7 +92,9 @@ class MealCard extends StatelessWidget {
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Icon(
-                          isFavorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                          isFavorite
+                              ? Icons.favorite_rounded
+                              : Icons.favorite_border_rounded,
                           color: isFavorite ? AppTheme.error : Colors.white,
                           size: 16,
                         ),
@@ -99,7 +107,8 @@ class MealCard extends StatelessWidget {
                     bottom: 8,
                     left: 8,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 3),
                       decoration: BoxDecoration(
                         color: AppTheme.primary.withValues(alpha: 0.9),
                         borderRadius: BorderRadius.circular(8),

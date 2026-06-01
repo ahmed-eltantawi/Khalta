@@ -47,11 +47,14 @@ class HealthProfilePage extends StatelessWidget {
                       spacing: 8,
                       runSpacing: 8,
                       children: HealthProfileEntity.availableDiets.map((diet) {
-                        final isActive = profile.dietaryPreferences.contains(diet);
+                        final isActive =
+                            profile.dietaryPreferences.contains(diet);
                         return _SelectableChip(
                           label: diet,
                           isSelected: isActive,
-                          onTap: () => context.read<HealthProfileCubit>().toggleDiet(diet),
+                          onTap: () => context
+                              .read<HealthProfileCubit>()
+                              .toggleDiet(diet),
                         );
                       }).toList(),
                     ),
@@ -65,14 +68,16 @@ class HealthProfilePage extends StatelessWidget {
                     child: Wrap(
                       spacing: 8,
                       runSpacing: 8,
-                      children: HealthProfileEntity.availableConditions.map((c) {
+                      children:
+                          HealthProfileEntity.availableConditions.map((c) {
                         final isActive = profile.healthConditions.contains(c);
                         return _SelectableChip(
                           label: c,
                           isSelected: isActive,
                           color: AppTheme.secondary,
-                          onTap: () =>
-                              context.read<HealthProfileCubit>().toggleCondition(c),
+                          onTap: () => context
+                              .read<HealthProfileCubit>()
+                              .toggleCondition(c),
                         );
                       }).toList(),
                     ),
@@ -89,9 +94,12 @@ class HealthProfilePage extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text('Target',
-                                style: TextStyle(color: AppTheme.textS(context), fontSize: 14)),
+                                style: TextStyle(
+                                    color: AppTheme.textS(context),
+                                    fontSize: 14)),
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 6),
                               decoration: BoxDecoration(
                                 color: AppTheme.primary.withValues(alpha: 0.15),
                                 borderRadius: BorderRadius.circular(20),
@@ -112,7 +120,8 @@ class HealthProfilePage extends StatelessWidget {
                             activeTrackColor: AppTheme.primary,
                             inactiveTrackColor: AppTheme.border(context),
                             thumbColor: AppTheme.primary,
-                            overlayColor: AppTheme.primary.withValues(alpha: 0.2),
+                            overlayColor:
+                                AppTheme.primary.withValues(alpha: 0.2),
                           ),
                           child: Slider(
                             value: profile.dailyCalorieTarget.toDouble(),
@@ -127,8 +136,14 @@ class HealthProfilePage extends StatelessWidget {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text('1000', style: TextStyle(color: AppTheme.textH(context), fontSize: 11)),
-                            Text('4000', style: TextStyle(color: AppTheme.textH(context), fontSize: 11)),
+                            Text('1000',
+                                style: TextStyle(
+                                    color: AppTheme.textH(context),
+                                    fontSize: 11)),
+                            Text('4000',
+                                style: TextStyle(
+                                    color: AppTheme.textH(context),
+                                    fontSize: 11)),
                           ],
                         ),
                       ],
@@ -159,7 +174,8 @@ class HealthProfilePage extends StatelessWidget {
                                   child: Text(
                                     '$diet — excludes: ${excluded.take(4).join(', ')}…',
                                     style: TextStyle(
-                                        color: AppTheme.textS(context), fontSize: 12),
+                                        color: AppTheme.textS(context),
+                                        fontSize: 12),
                                   ),
                                 ),
                               ],
@@ -180,11 +196,14 @@ class HealthProfilePage extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text('Dark Mode',
-                              style: TextStyle(color: AppTheme.textP(context), fontSize: 14)),
+                                style: TextStyle(
+                                    color: AppTheme.textP(context),
+                                    fontSize: 14)),
                             Switch.adaptive(
                               value: themeMode == ThemeMode.dark,
                               activeTrackColor: AppTheme.primary,
-                              onChanged: (_) => context.read<ThemeCubit>().toggleTheme(),
+                              onChanged: (_) =>
+                                  context.read<ThemeCubit>().toggleTheme(),
                             ),
                           ],
                         );
@@ -207,7 +226,8 @@ class _Section extends StatelessWidget {
   final IconData icon;
   final Widget child;
 
-  const _Section({required this.title, required this.icon, required this.child});
+  const _Section(
+      {required this.title, required this.icon, required this.child});
 
   @override
   Widget build(BuildContext context) {

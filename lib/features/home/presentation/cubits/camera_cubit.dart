@@ -66,7 +66,7 @@ class CameraCubit extends Cubit<CameraCubitState> {
     try {
       final ingredients = await detectIngredients(path);
       if (ingredients.isEmpty) {
-        // If nothing is detected, instead of failing, provide an empty string 
+        // If nothing is detected, instead of failing, provide an empty string
         // so the user can still add an item manually via the confirmation UI.
         _totalDetected = 1;
         _pendingIngredients = [''];
@@ -91,7 +91,7 @@ class CameraCubit extends Cubit<CameraCubitState> {
       final nameToAdd = (finalName != null && finalName.trim().isNotEmpty)
           ? finalName.trim()
           : currentState.currentIngredient;
-          
+
       // Only add if it's not entirely empty
       if (nameToAdd.isNotEmpty) {
         _acceptedIngredients.add(nameToAdd);

@@ -46,7 +46,8 @@ class MealRemoteDataSourceImpl implements MealRemoteDataSource {
       if (meals == null) return [];
       return (meals as List).map((m) => MealModel.fromFilterJson(m)).toList();
     } on DioException catch (e) {
-      throw ServerException(message: e.message ?? 'Failed to filter by ingredient');
+      throw ServerException(
+          message: e.message ?? 'Failed to filter by ingredient');
     }
   }
 
@@ -83,7 +84,9 @@ class MealRemoteDataSourceImpl implements MealRemoteDataSource {
       final response = await _dio.get(ApiConstants.categories);
       final categories = response.data['categories'];
       if (categories == null) return [];
-      return (categories as List).map((c) => CategoryModel.fromJson(c)).toList();
+      return (categories as List)
+          .map((c) => CategoryModel.fromJson(c))
+          .toList();
     } on DioException catch (e) {
       throw ServerException(message: e.message ?? 'Failed to get categories');
     }
@@ -100,7 +103,8 @@ class MealRemoteDataSourceImpl implements MealRemoteDataSource {
       if (meals == null) return [];
       return (meals as List).map((m) => MealModel.fromFilterJson(m)).toList();
     } on DioException catch (e) {
-      throw ServerException(message: e.message ?? 'Failed to filter by category');
+      throw ServerException(
+          message: e.message ?? 'Failed to filter by category');
     }
   }
 

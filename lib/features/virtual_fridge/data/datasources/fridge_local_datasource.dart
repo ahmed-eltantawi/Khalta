@@ -12,7 +12,8 @@ class FridgeLocalDataSource {
 
   List<FridgeItemEntity> getAll() {
     return _box.values
-        .map((e) => FridgeItemEntity.fromMap(Map<String, dynamic>.from(e as Map)))
+        .map((e) =>
+            FridgeItemEntity.fromMap(Map<String, dynamic>.from(e as Map)))
         .toList()
       ..sort((a, b) => b.addedAt.compareTo(a.addedAt));
   }

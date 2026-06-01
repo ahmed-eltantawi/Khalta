@@ -19,19 +19,22 @@ class _OnboardingPageState extends State<OnboardingPage> {
     _OnboardSlide(
       emoji: '📸',
       title: 'Scan Your Ingredients',
-      subtitle: 'Point your camera at any ingredient and let AI identify it instantly.',
+      subtitle:
+          'Point your camera at any ingredient and let AI identify it instantly.',
       gradient: [Color(0xFFFF6B35), Color(0xFFFF8C42)],
     ),
     _OnboardSlide(
       emoji: '🍽️',
       title: 'Discover Recipes',
-      subtitle: 'Get personalized meal suggestions powered by TheMealDB — explore thousands of dishes.',
+      subtitle:
+          'Get personalized meal suggestions powered by TheMealDB — explore thousands of dishes.',
       gradient: [Color(0xFF2EC4B6), Color(0xFF26A69A)],
     ),
     _OnboardSlide(
       emoji: '🧊',
       title: 'Manage Your Fridge',
-      subtitle: 'Track what\'s in your fridge and get recipes tailored to your available ingredients.',
+      subtitle:
+          'Track what\'s in your fridge and get recipes tailored to your available ingredients.',
       gradient: [Color(0xFF9B59B6), Color(0xFF8E44AD)],
     ),
   ];
@@ -64,8 +67,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
             controller: _controller,
             onPageChanged: (i) => setState(() => _currentPage = i),
             itemCount: _pages.length,
-            itemBuilder: (context, index) =>
-                _OnboardSlideWidget(slide: _pages[index], isActive: index == _currentPage),
+            itemBuilder: (context, index) => _OnboardSlideWidget(
+                slide: _pages[index], isActive: index == _currentPage),
           ),
           // Skip button
           Positioned(
@@ -73,7 +76,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
             right: 24,
             child: TextButton(
               onPressed: _finish,
-              child: Text('Skip', style: TextStyle(color: AppTheme.textS(context))),
+              child: Text('Skip',
+                  style: TextStyle(color: AppTheme.textS(context))),
             ),
           ),
           // Bottom controls
@@ -114,8 +118,11 @@ class _OnboardingPageState extends State<OnboardingPage> {
                         padding: const EdgeInsets.symmetric(vertical: 16),
                       ),
                       child: Text(
-                        _currentPage == _pages.length - 1 ? "Let's Cook! 🍳" : 'Next',
-                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                        _currentPage == _pages.length - 1
+                            ? "Let's Cook! 🍳"
+                            : 'Next',
+                        style: const TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.w600),
                       ),
                     ),
                   ),
@@ -175,9 +182,11 @@ class _OnboardSlideWidget extends StatelessWidget {
           child: Center(
             child: Text(slide.emoji, style: const TextStyle(fontSize: 72)),
           ),
-        )
-            .animate(target: isActive ? 1 : 0)
-            .scale(begin: const Offset(0.8, 0.8), end: const Offset(1, 1), duration: 500.ms, curve: Curves.elasticOut),
+        ).animate(target: isActive ? 1 : 0).scale(
+            begin: const Offset(0.8, 0.8),
+            end: const Offset(1, 1),
+            duration: 500.ms,
+            curve: Curves.elasticOut),
         const SizedBox(height: 48),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 32),

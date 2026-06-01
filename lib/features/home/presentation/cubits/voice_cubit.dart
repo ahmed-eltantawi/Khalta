@@ -89,7 +89,8 @@ class VoiceCubit extends Cubit<VoiceCubitState> {
 
   void _onError(SpeechRecognitionError error) {
     if (isClosed) return;
-    if (error.errorMsg == 'error_no_match' || error.errorMsg == 'error_speech_timeout') {
+    if (error.errorMsg == 'error_no_match' ||
+        error.errorMsg == 'error_speech_timeout') {
       // Nothing was recognized — just go back to idle
       emit(VoiceIdle());
     } else {
@@ -120,7 +121,18 @@ class VoiceCubit extends Cubit<VoiceCubitState> {
         .replaceAll(RegExp(r'\bplus\b', caseSensitive: false), ',');
 
     // Remove filler words
-    final fillers = {'um', 'uh', 'like', 'some', 'a', 'the', 'of', 'i', 'have', 'got'};
+    final fillers = {
+      'um',
+      'uh',
+      'like',
+      'some',
+      'a',
+      'the',
+      'of',
+      'i',
+      'have',
+      'got'
+    };
 
     final parts = normalized
         .split(RegExp(r'[,;]+'))
@@ -128,7 +140,8 @@ class VoiceCubit extends Cubit<VoiceCubitState> {
         .where((s) => s.isNotEmpty)
         .map((phrase) {
           // Remove filler words from each phrase
-          final words = phrase.split(RegExp(r'\s+'))
+          final words = phrase
+              .split(RegExp(r'\s+'))
               .where((w) => !fillers.contains(w) && w.length > 1)
               .toList();
           return words.join(' ');

@@ -22,7 +22,8 @@ class FridgePage extends StatefulWidget {
   State<FridgePage> createState() => _FridgePageState();
 }
 
-class _FridgePageState extends State<FridgePage> with SingleTickerProviderStateMixin {
+class _FridgePageState extends State<FridgePage>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
   @override
@@ -51,7 +52,10 @@ class _FridgePageState extends State<FridgePage> with SingleTickerProviderStateM
                 children: [
                   Expanded(
                     child: Text('My Fridge 🧊',
-                      style: TextStyle(color: AppTheme.textP(context), fontSize: 24, fontWeight: FontWeight.w700)),
+                        style: TextStyle(
+                            color: AppTheme.textP(context),
+                            fontSize: 24,
+                            fontWeight: FontWeight.w700)),
                   ),
                   ElevatedButton.icon(
                     onPressed: () => _showAddDialog(context),
@@ -71,8 +75,11 @@ class _FridgePageState extends State<FridgePage> with SingleTickerProviderStateM
               child: TabBar(
                 controller: _tabController,
                 indicatorSize: TabBarIndicatorSize.tab,
-                indicatorPadding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
-                indicator: BoxDecoration(color: AppTheme.primary, borderRadius: BorderRadius.circular(8)),
+                indicatorPadding:
+                    const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+                indicator: BoxDecoration(
+                    color: AppTheme.primary,
+                    borderRadius: BorderRadius.circular(8)),
                 labelColor: Colors.white,
                 labelPadding: const EdgeInsets.symmetric(horizontal: 24),
                 unselectedLabelColor: AppTheme.textS(context),
@@ -92,7 +99,8 @@ class _FridgePageState extends State<FridgePage> with SingleTickerProviderStateM
                   _ItemsTab(onAdd: () => _showAddDialog(context)),
                   BlocProvider(
                     create: (_) => sl<CameraCubit>(),
-                    child: _ScanPhotoTab(onIngredientAdded: () => _tabController.animateTo(0)),
+                    child: _ScanPhotoTab(
+                        onIngredientAdded: () => _tabController.animateTo(0)),
                   ),
                 ],
               ),
@@ -108,7 +116,8 @@ class _FridgePageState extends State<FridgePage> with SingleTickerProviderStateM
       context: context,
       isScrollControlled: true,
       backgroundColor: AppTheme.card(context),
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (_) => BlocProvider.value(
         value: context.read<FridgeBloc>(),
         child: _AddItemSheet(),
@@ -128,7 +137,8 @@ class _ItemsTab extends StatelessWidget {
     return BlocBuilder<FridgeBloc, FridgeState>(
       builder: (context, state) {
         if (state is FridgeLoading) {
-          return const Center(child: CircularProgressIndicator(color: AppTheme.primary));
+          return const Center(
+              child: CircularProgressIndicator(color: AppTheme.primary));
         }
         if (state is FridgeLoaded && state.items.isEmpty) {
           return _buildEmpty(context);
@@ -141,7 +151,9 @@ class _ItemsTab extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
                   child: ElevatedButton.icon(
-                    onPressed: () => context.read<FridgeBloc>().add(const SearchRecipesFromFridgeEvent()),
+                    onPressed: () => context
+                        .read<FridgeBloc>()
+                        .add(const SearchRecipesFromFridgeEvent()),
                     icon: const Icon(Icons.search_rounded),
                     label: const Text('Find Recipes From My Fridge'),
                     style: ElevatedButton.styleFrom(
@@ -156,33 +168,49 @@ class _ItemsTab extends StatelessWidget {
               sliver: SliverGrid(
                 delegate: SliverChildBuilderDelegate(
                   (ctx, i) => _FridgeItemCard(
-                    item: state.items[i], index: i,
-                    onDelete: () => context.read<FridgeBloc>().add(RemoveFridgeItemEvent(state.items[i].id)),
+                    item: state.items[i],
+                    index: i,
+                    onDelete: () => context
+                        .read<FridgeBloc>()
+                        .add(RemoveFridgeItemEvent(state.items[i].id)),
                     onEdit: () => _showEditDialog(ctx, state.items[i]),
                   ),
                   childCount: state.items.length,
                 ),
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2, crossAxisSpacing: 12, mainAxisSpacing: 12, childAspectRatio: 1.05,
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 12,
+                  mainAxisSpacing: 12,
+                  childAspectRatio: 1.05,
                 ),
               ),
             ),
-            if (state.suggestedMeals != null && state.perfectMatches != null) ...[
-              if (state.suggestedMeals!.isEmpty && state.perfectMatches!.isEmpty)
+            if (state.suggestedMeals != null &&
+                state.perfectMatches != null) ...[
+              if (state.suggestedMeals!.isEmpty &&
+                  state.perfectMatches!.isEmpty)
                 SliverToBoxAdapter(
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 16),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 32, horizontal: 16),
                     child: Center(
                       child: Column(
                         children: [
-                          const Icon(Icons.restaurant_menu_rounded, size: 48, color: Colors.grey),
+                          const Icon(Icons.restaurant_menu_rounded,
+                              size: 48, color: Colors.grey),
                           const SizedBox(height: 16),
-                          Text('No meals available', 
-                            style: TextStyle(color: AppTheme.textP(context), fontSize: 16, fontWeight: FontWeight.w600)),
+                          Text('No meals available',
+                              style: TextStyle(
+                                  color: AppTheme.textP(context),
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600)),
                           const SizedBox(height: 4),
-                          Text('Try adding more varied ingredients to your fridge.', 
-                            textAlign: TextAlign.center,
-                            style: TextStyle(color: AppTheme.textS(context), fontSize: 14)),
+                          Text(
+                              'Try adding more varied ingredients to your fridge.',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  color: AppTheme.textS(context),
+                                  fontSize: 14)),
                         ],
                       ),
                     ),
@@ -194,18 +222,26 @@ class _ItemsTab extends StatelessWidget {
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(20, 20, 20, 12),
                       child: Text('Perfect Matches (All Ingredients)',
-                        style: TextStyle(color: AppTheme.textP(context), fontSize: 17, fontWeight: FontWeight.w600)),
+                          style: TextStyle(
+                              color: AppTheme.textP(context),
+                              fontSize: 17,
+                              fontWeight: FontWeight.w600)),
                     ),
                   ),
                   SliverPadding(
                     padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
                     sliver: SliverGrid(
                       delegate: SliverChildBuilderDelegate(
-                        (ctx, i) => MealCard(meal: state.perfectMatches![i], index: i),
+                        (ctx, i) =>
+                            MealCard(meal: state.perfectMatches![i], index: i),
                         childCount: state.perfectMatches!.length,
                       ),
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2, crossAxisSpacing: 12, mainAxisSpacing: 12, childAspectRatio: 0.75,
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 12,
+                        mainAxisSpacing: 12,
+                        childAspectRatio: 0.75,
                       ),
                     ),
                   ),
@@ -215,18 +251,27 @@ class _ItemsTab extends StatelessWidget {
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(20, 20, 20, 12),
                       child: Text('Possible Options (Any Ingredient)',
-                        style: TextStyle(color: AppTheme.textP(context), fontSize: 17, fontWeight: FontWeight.w600)),
+                          style: TextStyle(
+                              color: AppTheme.textP(context),
+                              fontSize: 17,
+                              fontWeight: FontWeight.w600)),
                     ),
                   ),
                   SliverPadding(
                     padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
                     sliver: SliverGrid(
                       delegate: SliverChildBuilderDelegate(
-                        (ctx, i) => MealCard(meal: state.suggestedMeals![i], index: i),
-                        childCount: state.suggestedMeals!.length.clamp(0, 20), // limit to 20
+                        (ctx, i) =>
+                            MealCard(meal: state.suggestedMeals![i], index: i),
+                        childCount: state.suggestedMeals!.length
+                            .clamp(0, 20), // limit to 20
                       ),
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2, crossAxisSpacing: 12, mainAxisSpacing: 12, childAspectRatio: 0.75,
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 12,
+                        mainAxisSpacing: 12,
+                        childAspectRatio: 0.75,
                       ),
                     ),
                   ),
@@ -242,25 +287,36 @@ class _ItemsTab extends StatelessWidget {
   }
 
   Widget _buildEmpty(BuildContext context) {
-    return Center(child: Column(
+    return Center(
+        child: Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         const Text('🧊', style: TextStyle(fontSize: 64)),
         const SizedBox(height: 16),
-        Text('Your fridge is empty', style: TextStyle(color: AppTheme.textP(context), fontSize: 18, fontWeight: FontWeight.w600)),
+        Text('Your fridge is empty',
+            style: TextStyle(
+                color: AppTheme.textP(context),
+                fontSize: 18,
+                fontWeight: FontWeight.w600)),
         const SizedBox(height: 8),
-        Text('Add ingredients to find matching recipes.', style: TextStyle(color: AppTheme.textS(context))),
+        Text('Add ingredients to find matching recipes.',
+            style: TextStyle(color: AppTheme.textS(context))),
         const SizedBox(height: 24),
-        ElevatedButton.icon(onPressed: onAdd, icon: const Icon(Icons.add_rounded), label: const Text('Add First Ingredient')),
+        ElevatedButton.icon(
+            onPressed: onAdd,
+            icon: const Icon(Icons.add_rounded),
+            label: const Text('Add First Ingredient')),
       ],
     ));
   }
 
   void _showEditDialog(BuildContext context, FridgeItemEntity item) {
     showModalBottomSheet(
-      context: context, isScrollControlled: true,
+      context: context,
+      isScrollControlled: true,
       backgroundColor: AppTheme.card(context),
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (_) => BlocProvider.value(
         value: context.read<FridgeBloc>(),
         child: _EditItemSheet(item: item),
@@ -400,8 +456,7 @@ class _ScanPhotoTabState extends State<_ScanPhotoTab> {
       onSkip: () => context.read<CameraCubit>().skipIngredient(),
       onAdd: (finalName) {
         _addToFridge(finalName);
-        AppSnackBar.showSuccess(
-            context, '$finalName added to fridge! ✅');
+        AppSnackBar.showSuccess(context, '$finalName added to fridge! ✅');
         context.read<CameraCubit>().confirmIngredient(finalName);
       },
     );
@@ -493,8 +548,8 @@ class _FridgeIngredientConfirmationViewState
                     child: LinearProgressIndicator(
                       value: stepNumber / widget.state.totalDetected,
                       backgroundColor: AppTheme.border(context),
-                      valueColor: const AlwaysStoppedAnimation<Color>(
-                          AppTheme.primary),
+                      valueColor:
+                          const AlwaysStoppedAnimation<Color>(AppTheme.primary),
                       minHeight: 4,
                     ),
                   ),
@@ -518,8 +573,7 @@ class _FridgeIngredientConfirmationViewState
             decoration: BoxDecoration(
               color: AppTheme.card(context),
               borderRadius: BorderRadius.circular(20),
-              border:
-                  Border.all(color: AppTheme.border(context), width: 0.5),
+              border: Border.all(color: AppTheme.border(context), width: 0.5),
             ),
             child: Column(
               children: [
@@ -557,10 +611,7 @@ class _FridgeIngredientConfirmationViewState
                         size: 28, color: AppTheme.warning),
                   ),
                 const SizedBox(height: 10),
-                Text(
-                    isUnknown
-                        ? "We couldn't recognize this item"
-                        : 'I see a',
+                Text(isUnknown ? "We couldn't recognize this item" : 'I see a',
                     style: TextStyle(
                         color: AppTheme.textS(context), fontSize: 14)),
                 const SizedBox(height: 8),
@@ -662,7 +713,8 @@ class _PickButton extends StatelessWidget {
   final IconData icon;
   final String label;
   final VoidCallback onTap;
-  const _PickButton({required this.icon, required this.label, required this.onTap});
+  const _PickButton(
+      {required this.icon, required this.label, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -678,7 +730,11 @@ class _PickButton extends StatelessWidget {
         child: Column(children: [
           Icon(icon, color: AppTheme.primary, size: 32),
           const SizedBox(height: 8),
-          Text(label, style: TextStyle(color: AppTheme.textP(context), fontSize: 13, fontWeight: FontWeight.w500)),
+          Text(label,
+              style: TextStyle(
+                  color: AppTheme.textP(context),
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500)),
         ]),
       ),
     );
@@ -692,7 +748,11 @@ class _FridgeItemCard extends StatelessWidget {
   final int index;
   final VoidCallback onDelete;
   final VoidCallback onEdit;
-  const _FridgeItemCard({required this.item, required this.index, required this.onDelete, required this.onEdit});
+  const _FridgeItemCard(
+      {required this.item,
+      required this.index,
+      required this.onDelete,
+      required this.onEdit});
 
   Color get _expiryColor {
     if (item.isExpired) return AppTheme.error;
@@ -716,46 +776,79 @@ class _FridgeItemCard extends StatelessWidget {
           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
             CachedNetworkImage(
               imageUrl: ApiConstants.ingredientImageUrl(item.name),
-              width: 44, height: 44,
-              errorWidget: (_, __, ___) => Icon(Icons.kitchen_rounded, color: AppTheme.textH(context), size: 36),
+              width: 44,
+              height: 44,
+              errorWidget: (_, __, ___) => Icon(Icons.kitchen_rounded,
+                  color: AppTheme.textH(context), size: 36),
             ),
             IconButton(
-              icon: Icon(Icons.close_rounded, size: 18, color: AppTheme.textH(context)),
-              onPressed: onDelete, padding: EdgeInsets.zero, constraints: const BoxConstraints(),
+              icon: Icon(Icons.close_rounded,
+                  size: 18, color: AppTheme.textH(context)),
+              onPressed: onDelete,
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(),
             ),
           ]),
           const Spacer(),
-          Text(item.name, style: TextStyle(color: AppTheme.textP(context), fontSize: 13, fontWeight: FontWeight.w600),
-            maxLines: 1, overflow: TextOverflow.ellipsis),
+          Text(item.name,
+              style: TextStyle(
+                  color: AppTheme.textP(context),
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis),
           const SizedBox(height: 2),
-          Text('${item.quantity} ${item.unit}', style: TextStyle(color: AppTheme.textS(context), fontSize: 11)),
+          Text('${item.quantity} ${item.unit}',
+              style: TextStyle(color: AppTheme.textS(context), fontSize: 11)),
           if (item.expiryDate != null) ...[
             const SizedBox(height: 4),
             Row(children: [
-              Container(width: 6, height: 6, decoration: BoxDecoration(color: _expiryColor, shape: BoxShape.circle)),
+              Container(
+                  width: 6,
+                  height: 6,
+                  decoration: BoxDecoration(
+                      color: _expiryColor, shape: BoxShape.circle)),
               const SizedBox(width: 4),
               Text(
-                item.isExpired ? 'Expired' : item.isExpiringSoon ? 'Expiring soon' : DateFormat('MMM dd').format(item.expiryDate!),
+                item.isExpired
+                    ? 'Expired'
+                    : item.isExpiringSoon
+                        ? 'Expiring soon'
+                        : DateFormat('MMM dd').format(item.expiryDate!),
                 style: TextStyle(color: _expiryColor, fontSize: 10),
               ),
             ]),
           ],
         ]),
       ),
-    ).animate(delay: Duration(milliseconds: index * 50)).fadeIn(duration: 300.ms).scale(begin: const Offset(0.95, 0.95));
+    )
+        .animate(delay: Duration(milliseconds: index * 50))
+        .fadeIn(duration: 300.ms)
+        .scale(begin: const Offset(0.95, 0.95));
   }
 
   void _confirmDelete(BuildContext context) {
-    showDialog(context: context, builder: (_) => AlertDialog(
-      backgroundColor: AppTheme.card(context),
-      title: Text('Remove Item', style: TextStyle(color: AppTheme.textP(context))),
-      content: Text('Remove ${item.name}?', style: TextStyle(color: AppTheme.textS(context))),
-      actions: [
-        TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
-        TextButton(onPressed: () { Navigator.pop(context); onDelete(); },
-          child: const Text('Remove', style: TextStyle(color: AppTheme.error))),
-      ],
-    ));
+    showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+              backgroundColor: AppTheme.card(context),
+              title: Text('Remove Item',
+                  style: TextStyle(color: AppTheme.textP(context))),
+              content: Text('Remove ${item.name}?',
+                  style: TextStyle(color: AppTheme.textS(context))),
+              actions: [
+                TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('Cancel')),
+                TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      onDelete();
+                    },
+                    child: const Text('Remove',
+                        style: TextStyle(color: AppTheme.error))),
+              ],
+            ));
   }
 }
 
@@ -794,96 +887,130 @@ class _AddItemSheetState extends State<_AddItemSheet> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.fromLTRB(20, 20, 20, MediaQuery.of(context).viewInsets.bottom + 24),
-      child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text('Add Ingredient', style: TextStyle(color: AppTheme.textP(context), fontSize: 18, fontWeight: FontWeight.w600)),
-        const SizedBox(height: 16),
-        Autocomplete<String>(
-          optionsBuilder: (TextEditingValue textEditingValue) {
-            if (textEditingValue.text.isEmpty) {
-              return const Iterable<String>.empty();
-            }
-            return _allIngredients.where((String option) {
-              return option.toLowerCase().contains(textEditingValue.text.toLowerCase());
-            });
-          },
-          onSelected: (String selection) {
-            // Handled automatically by Autocomplete textEditingController
-          },
-          fieldViewBuilder: (context, textEditingController, focusNode, onFieldSubmitted) {
-            _autocompleteCtrl = textEditingController;
-            return TextField(
-              controller: textEditingController,
-              focusNode: focusNode,
-              autofocus: true,
-              style: TextStyle(color: AppTheme.textP(context)),
-              decoration: InputDecoration(
-                labelText: 'Ingredient name',
-                labelStyle: TextStyle(color: AppTheme.textH(context)),
-              ),
-              onSubmitted: (String value) {
-                onFieldSubmitted();
+      padding: EdgeInsets.fromLTRB(
+          20, 20, 20, MediaQuery.of(context).viewInsets.bottom + 24),
+      child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Add Ingredient',
+                style: TextStyle(
+                    color: AppTheme.textP(context),
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600)),
+            const SizedBox(height: 16),
+            Autocomplete<String>(
+              optionsBuilder: (TextEditingValue textEditingValue) {
+                if (textEditingValue.text.isEmpty) {
+                  return const Iterable<String>.empty();
+                }
+                return _allIngredients.where((String option) {
+                  return option
+                      .toLowerCase()
+                      .contains(textEditingValue.text.toLowerCase());
+                });
               },
-            );
-          },
-          optionsViewBuilder: (context, onSelected, options) {
-            return Align(
-              alignment: Alignment.topLeft,
-              child: Material(
-                color: AppTheme.card(context),
-                elevation: 4.0,
-                borderRadius: BorderRadius.circular(8),
-                child: SizedBox(
-                  height: 200.0,
-                  width: MediaQuery.of(context).size.width - 40, // Match modal padding
-                  child: ListView.builder(
-                    padding: const EdgeInsets.all(8.0),
-                    itemCount: options.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      final String option = options.elementAt(index);
-                      return ListTile(
-                        title: Text(option, style: TextStyle(color: AppTheme.textP(context))),
-                        onTap: () {
-                          onSelected(option);
-                        },
-                      );
-                    },
+              onSelected: (String selection) {
+                // Handled automatically by Autocomplete textEditingController
+              },
+              fieldViewBuilder: (context, textEditingController, focusNode,
+                  onFieldSubmitted) {
+                _autocompleteCtrl = textEditingController;
+                return TextField(
+                  controller: textEditingController,
+                  focusNode: focusNode,
+                  autofocus: true,
+                  style: TextStyle(color: AppTheme.textP(context)),
+                  decoration: InputDecoration(
+                    labelText: 'Ingredient name',
+                    labelStyle: TextStyle(color: AppTheme.textH(context)),
                   ),
-                ),
-              ),
-            );
-          },
-        ),
-        const SizedBox(height: 12),
-        Row(children: [
-          Expanded(child: TextField(controller: _qtyCtrl, keyboardType: TextInputType.number,
-            style: TextStyle(color: AppTheme.textP(context)),
-            decoration: InputDecoration(labelText: 'Quantity', labelStyle: TextStyle(color: AppTheme.textH(context))))),
-          const SizedBox(width: 12),
-          Expanded(child: DropdownButtonFormField<String>(
-            initialValue: _unit, dropdownColor: AppTheme.card(context),
-            style: TextStyle(color: AppTheme.textP(context)),
-            decoration: InputDecoration(labelText: 'Unit', labelStyle: TextStyle(color: AppTheme.textH(context))),
-            items: _units.map((u) => DropdownMenuItem(value: u, child: Text(u))).toList(),
-            onChanged: (v) => setState(() => _unit = v ?? 'piece'),
-          )),
-        ]),
-        const SizedBox(height: 12),
-        _ExpiryPicker(expiry: _expiry, onChanged: (d) => setState(() => _expiry = d)),
-        const SizedBox(height: 20),
-        SizedBox(width: double.infinity, child: ElevatedButton(
-          onPressed: () {
-            final text = _autocompleteCtrl?.text.trim() ?? '';
-            if (text.isEmpty) return;
-            final item = FridgeItemEntity(id: const Uuid().v4(), name: text,
-              quantity: _qtyCtrl.text.trim(), unit: _unit, expiryDate: _expiry, addedAt: DateTime.now());
-            context.read<FridgeBloc>().add(AddFridgeItemEvent(item));
-            Navigator.pop(context);
-            AppSnackBar.showSuccess(context, '${item.name} added!');
-          },
-          child: const Text('Add to Fridge'),
-        )),
-      ]),
+                  onSubmitted: (String value) {
+                    onFieldSubmitted();
+                  },
+                );
+              },
+              optionsViewBuilder: (context, onSelected, options) {
+                return Align(
+                  alignment: Alignment.topLeft,
+                  child: Material(
+                    color: AppTheme.card(context),
+                    elevation: 4.0,
+                    borderRadius: BorderRadius.circular(8),
+                    child: SizedBox(
+                      height: 200.0,
+                      width: MediaQuery.of(context).size.width -
+                          40, // Match modal padding
+                      child: ListView.builder(
+                        padding: const EdgeInsets.all(8.0),
+                        itemCount: options.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          final String option = options.elementAt(index);
+                          return ListTile(
+                            title: Text(option,
+                                style:
+                                    TextStyle(color: AppTheme.textP(context))),
+                            onTap: () {
+                              onSelected(option);
+                            },
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+            const SizedBox(height: 12),
+            Row(children: [
+              Expanded(
+                  child: TextField(
+                      controller: _qtyCtrl,
+                      keyboardType: TextInputType.number,
+                      style: TextStyle(color: AppTheme.textP(context)),
+                      decoration: InputDecoration(
+                          labelText: 'Quantity',
+                          labelStyle:
+                              TextStyle(color: AppTheme.textH(context))))),
+              const SizedBox(width: 12),
+              Expanded(
+                  child: DropdownButtonFormField<String>(
+                initialValue: _unit,
+                dropdownColor: AppTheme.card(context),
+                style: TextStyle(color: AppTheme.textP(context)),
+                decoration: InputDecoration(
+                    labelText: 'Unit',
+                    labelStyle: TextStyle(color: AppTheme.textH(context))),
+                items: _units
+                    .map((u) => DropdownMenuItem(value: u, child: Text(u)))
+                    .toList(),
+                onChanged: (v) => setState(() => _unit = v ?? 'piece'),
+              )),
+            ]),
+            const SizedBox(height: 12),
+            _ExpiryPicker(
+                expiry: _expiry, onChanged: (d) => setState(() => _expiry = d)),
+            const SizedBox(height: 20),
+            SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    final text = _autocompleteCtrl?.text.trim() ?? '';
+                    if (text.isEmpty) return;
+                    final item = FridgeItemEntity(
+                        id: const Uuid().v4(),
+                        name: text,
+                        quantity: _qtyCtrl.text.trim(),
+                        unit: _unit,
+                        expiryDate: _expiry,
+                        addedAt: DateTime.now());
+                    context.read<FridgeBloc>().add(AddFridgeItemEvent(item));
+                    Navigator.pop(context);
+                    AppSnackBar.showSuccess(context, '${item.name} added!');
+                  },
+                  child: const Text('Add to Fridge'),
+                )),
+          ]),
     );
   }
 }
@@ -916,53 +1043,90 @@ class _EditItemSheetState extends State<_EditItemSheet> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.fromLTRB(20, 20, 20, MediaQuery.of(context).viewInsets.bottom + 24),
-      child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          Text('Edit Ingredient', style: TextStyle(color: AppTheme.textP(context), fontSize: 18, fontWeight: FontWeight.w600)),
-          IconButton(
-            icon: const Icon(Icons.delete_rounded, color: AppTheme.error),
-            onPressed: () {
-              context.read<FridgeBloc>().add(RemoveFridgeItemEvent(widget.item.id));
-              Navigator.pop(context);
-              AppSnackBar.showSuccess(context, '${widget.item.name} removed');
-            },
-          ),
-        ]),
-        const SizedBox(height: 16),
-        TextField(controller: _nameCtrl, style: TextStyle(color: AppTheme.textP(context)),
-          decoration: InputDecoration(labelText: 'Name', labelStyle: TextStyle(color: AppTheme.textH(context)))),
-        const SizedBox(height: 12),
-        Row(children: [
-          Expanded(child: TextField(controller: _qtyCtrl, keyboardType: TextInputType.number,
-            style: TextStyle(color: AppTheme.textP(context)),
-            decoration: InputDecoration(labelText: 'Quantity', labelStyle: TextStyle(color: AppTheme.textH(context))))),
-          const SizedBox(width: 12),
-          Expanded(child: DropdownButtonFormField<String>(
-            initialValue: _unit, dropdownColor: AppTheme.card(context),
-            style: TextStyle(color: AppTheme.textP(context)),
-            decoration: InputDecoration(labelText: 'Unit', labelStyle: TextStyle(color: AppTheme.textH(context))),
-            items: _units.map((u) => DropdownMenuItem(value: u, child: Text(u))).toList(),
-            onChanged: (v) => setState(() => _unit = v ?? 'piece'),
-          )),
-        ]),
-        const SizedBox(height: 12),
-        _ExpiryPicker(expiry: _expiry, onChanged: (d) => setState(() => _expiry = d)),
-        const SizedBox(height: 20),
-        SizedBox(width: double.infinity, child: ElevatedButton(
-          onPressed: () {
-            if (_nameCtrl.text.trim().isEmpty) return;
-            // Remove old, add updated
-            context.read<FridgeBloc>().add(RemoveFridgeItemEvent(widget.item.id));
-            final updated = FridgeItemEntity(id: widget.item.id, name: _nameCtrl.text.trim(),
-              quantity: _qtyCtrl.text.trim(), unit: _unit, expiryDate: _expiry, addedAt: widget.item.addedAt);
-            context.read<FridgeBloc>().add(AddFridgeItemEvent(updated));
-            Navigator.pop(context);
-            AppSnackBar.showSuccess(context, 'Updated ${updated.name}');
-          },
-          child: const Text('Save Changes'),
-        )),
-      ]),
+      padding: EdgeInsets.fromLTRB(
+          20, 20, 20, MediaQuery.of(context).viewInsets.bottom + 24),
+      child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+              Text('Edit Ingredient',
+                  style: TextStyle(
+                      color: AppTheme.textP(context),
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600)),
+              IconButton(
+                icon: const Icon(Icons.delete_rounded, color: AppTheme.error),
+                onPressed: () {
+                  context
+                      .read<FridgeBloc>()
+                      .add(RemoveFridgeItemEvent(widget.item.id));
+                  Navigator.pop(context);
+                  AppSnackBar.showSuccess(
+                      context, '${widget.item.name} removed');
+                },
+              ),
+            ]),
+            const SizedBox(height: 16),
+            TextField(
+                controller: _nameCtrl,
+                style: TextStyle(color: AppTheme.textP(context)),
+                decoration: InputDecoration(
+                    labelText: 'Name',
+                    labelStyle: TextStyle(color: AppTheme.textH(context)))),
+            const SizedBox(height: 12),
+            Row(children: [
+              Expanded(
+                  child: TextField(
+                      controller: _qtyCtrl,
+                      keyboardType: TextInputType.number,
+                      style: TextStyle(color: AppTheme.textP(context)),
+                      decoration: InputDecoration(
+                          labelText: 'Quantity',
+                          labelStyle:
+                              TextStyle(color: AppTheme.textH(context))))),
+              const SizedBox(width: 12),
+              Expanded(
+                  child: DropdownButtonFormField<String>(
+                initialValue: _unit,
+                dropdownColor: AppTheme.card(context),
+                style: TextStyle(color: AppTheme.textP(context)),
+                decoration: InputDecoration(
+                    labelText: 'Unit',
+                    labelStyle: TextStyle(color: AppTheme.textH(context))),
+                items: _units
+                    .map((u) => DropdownMenuItem(value: u, child: Text(u)))
+                    .toList(),
+                onChanged: (v) => setState(() => _unit = v ?? 'piece'),
+              )),
+            ]),
+            const SizedBox(height: 12),
+            _ExpiryPicker(
+                expiry: _expiry, onChanged: (d) => setState(() => _expiry = d)),
+            const SizedBox(height: 20),
+            SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    if (_nameCtrl.text.trim().isEmpty) return;
+                    // Remove old, add updated
+                    context
+                        .read<FridgeBloc>()
+                        .add(RemoveFridgeItemEvent(widget.item.id));
+                    final updated = FridgeItemEntity(
+                        id: widget.item.id,
+                        name: _nameCtrl.text.trim(),
+                        quantity: _qtyCtrl.text.trim(),
+                        unit: _unit,
+                        expiryDate: _expiry,
+                        addedAt: widget.item.addedAt);
+                    context.read<FridgeBloc>().add(AddFridgeItemEvent(updated));
+                    Navigator.pop(context);
+                    AppSnackBar.showSuccess(context, 'Updated ${updated.name}');
+                  },
+                  child: const Text('Save Changes'),
+                )),
+          ]),
     );
   }
 }
@@ -994,10 +1158,13 @@ class _ExpiryPicker extends StatelessWidget {
           border: Border.all(color: AppTheme.border(context)),
         ),
         child: Row(children: [
-          Icon(Icons.calendar_today_rounded, size: 16, color: AppTheme.textH(context)),
+          Icon(Icons.calendar_today_rounded,
+              size: 16, color: AppTheme.textH(context)),
           const SizedBox(width: 8),
           Text(
-            expiry != null ? 'Expires: ${DateFormat('MMM dd, yyyy').format(expiry!)}' : 'Set expiry date (optional)',
+            expiry != null
+                ? 'Expires: ${DateFormat('MMM dd, yyyy').format(expiry!)}'
+                : 'Set expiry date (optional)',
             style: TextStyle(color: AppTheme.textS(context), fontSize: 14),
           ),
         ]),

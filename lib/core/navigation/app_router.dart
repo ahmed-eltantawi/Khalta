@@ -107,10 +107,16 @@ class _BottomNav extends StatelessWidget {
   Widget build(BuildContext context) {
     final items = [
       const _NavItem(icon: Icons.home_rounded, label: 'Home', path: '/'),
-      const _NavItem(icon: Icons.search_rounded, label: 'Search', path: '/search'),
-      const _NavItem(icon: Icons.kitchen_rounded, label: 'Fridge', path: '/fridge'),
-      const _NavItem(icon: Icons.favorite_rounded, label: 'Saved', path: '/saved'),
-      const _NavItem(icon: Icons.person_rounded, label: 'Profile', path: '/health-profile'),
+      const _NavItem(
+          icon: Icons.search_rounded, label: 'Search', path: '/search'),
+      const _NavItem(
+          icon: Icons.kitchen_rounded, label: 'Fridge', path: '/fridge'),
+      const _NavItem(
+          icon: Icons.favorite_rounded, label: 'Saved', path: '/saved'),
+      const _NavItem(
+          icon: Icons.person_rounded,
+          label: 'Profile',
+          path: '/health-profile'),
     ];
 
     int currentIndex = 0;

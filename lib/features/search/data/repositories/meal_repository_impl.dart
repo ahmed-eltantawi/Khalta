@@ -90,7 +90,8 @@ class MealRepositoryImpl implements MealRepository {
     if (ingredients.isEmpty) return [];
     if (ingredients.length == 1) {
       try {
-        return await _remoteDataSource.searchMealsByIngredient(ingredients.first);
+        return await _remoteDataSource
+            .searchMealsByIngredient(ingredients.first);
       } on ServerException {
         rethrow;
       }
@@ -111,14 +112,11 @@ class MealRepositoryImpl implements MealRepository {
       }
 
       // Keep only meals whose ID appears in every set (preserving order)
-      return results.first
-          .where((m) => commonIds.contains(m.id))
-          .toList();
+      return results.first.where((m) => commonIds.contains(m.id)).toList();
     } on ServerException {
       rethrow;
     }
   }
-
 
   @override
   Future<List<String>> getAllIngredients() async {

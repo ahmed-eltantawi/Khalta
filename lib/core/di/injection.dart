@@ -21,7 +21,7 @@ import '../../features/saved_recipes/presentation/pages/saved_recipes_cubit.dart
 import '../../features/health_profile/presentation/pages/health_profile_cubit.dart';
 import '../../features/home/presentation/cubits/home_cubit.dart';
 
-  // Features - Home
+// Features - Home
 import '../../features/home/domain/usecases/detect_ingredients_from_image.dart';
 import '../../features/home/presentation/cubits/camera_cubit.dart';
 import '../../features/home/presentation/cubits/voice_cubit.dart';
@@ -54,9 +54,10 @@ Future<void> initDependencies() async {
   sl.registerLazySingleton(() => GetAllCategories(sl<MealRepository>()));
   sl.registerLazySingleton(() => FilterMealsByCategory(sl<MealRepository>()));
   sl.registerLazySingleton(() => FilterMealsByArea(sl<MealRepository>()));
-  sl.registerLazySingleton(() => FilterMealsByIngredients(sl<MealRepository>()));
+  sl.registerLazySingleton(
+      () => FilterMealsByIngredients(sl<MealRepository>()));
   sl.registerLazySingleton(() => GetAllIngredients(sl<MealRepository>()));
-  
+
   sl.registerLazySingleton(() => DetectIngredientsFromImage());
 
   // ── BLoCs / Cubits ────────────────────────────────────────────────────────
@@ -64,7 +65,7 @@ Future<void> initDependencies() async {
         getRandomMeals: sl<GetRandomMeals>(),
         getAllCategories: sl<GetAllCategories>(),
       ));
-      
+
   sl.registerFactory(() => CameraCubit(sl<DetectIngredientsFromImage>()));
   sl.registerFactory(() => VoiceCubit());
 

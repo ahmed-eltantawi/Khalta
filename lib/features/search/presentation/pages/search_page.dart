@@ -115,9 +115,9 @@ class _SearchPageState extends State<SearchPage> {
                                 if (parts.isNotEmpty) {
                                   _searchController.clear();
                                   setState(() {});
-                                  context.read<SearchBloc>().add(
-                                      SearchQueryChanged(
-                                          parts.join(',')));
+                                  context
+                                      .read<SearchBloc>()
+                                      .add(SearchQueryChanged(parts.join(',')));
                                   _focusNode.requestFocus();
                                   return;
                                 }
@@ -133,8 +133,9 @@ class _SearchPageState extends State<SearchPage> {
                               if (q.contains(',')) {
                                 _searchController.clear();
                                 setState(() {});
-                                context.read<SearchBloc>().add(
-                                    SearchQueryChanged(q.trim()));
+                                context
+                                    .read<SearchBloc>()
+                                    .add(SearchQueryChanged(q.trim()));
                               } else {
                                 context
                                     .read<SearchBloc>()
@@ -188,8 +189,7 @@ class _SearchPageState extends State<SearchPage> {
                 if (chips.isEmpty) return const SizedBox.shrink();
 
                 return Padding(
-                  padding:
-                      const EdgeInsets.fromLTRB(16, 0, 16, 10),
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [

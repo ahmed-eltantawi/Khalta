@@ -60,7 +60,7 @@ class FridgeLoaded extends FridgeState {
   final List<MealEntity>? perfectMatches;
 
   const FridgeLoaded({
-    required this.items, 
+    required this.items,
     this.suggestedMeals,
     this.perfectMatches,
   });
@@ -132,12 +132,14 @@ class FridgeBloc extends Bloc<FridgeEvent, FridgeState> {
 
     emit(FridgeLoading());
     try {
-      final ingredientNames = currentItems.map((e) => e.name.toLowerCase()).toList();
-      
+      final ingredientNames =
+          currentItems.map((e) => e.name.toLowerCase()).toList();
+
       // Perform parallel searches for each ingredient
-      final futures = ingredientNames.map((ing) => searchMealsByIngredient(ing));
+      final futures =
+          ingredientNames.map((ing) => searchMealsByIngredient(ing));
       final results = await Future.wait(futures);
-      
+
       // Calculate perfect matches (intersection) and possible options (union)
       final Map<String, int> mealCounts = {};
       final Map<String, MealEntity> mealMap = {};
@@ -162,14 +164,17 @@ class FridgeBloc extends Bloc<FridgeEvent, FridgeState> {
           possible.add(meal);
         }
       }
-      
+
       emit(FridgeLoaded(
-        items: currentItems, 
+        items: currentItems,
         suggestedMeals: possible,
         perfectMatches: perfect,
       ));
     } catch (e) {
-      emit(FridgeLoaded(items: currentItems, suggestedMeals: const [], perfectMatches: const []));
+      emit(FridgeLoaded(
+          items: currentItems,
+          suggestedMeals: const [],
+          perfectMatches: const []));
     }
   }
 }

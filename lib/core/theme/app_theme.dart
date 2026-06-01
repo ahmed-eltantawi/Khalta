@@ -53,19 +53,31 @@ class AppTheme {
   // ─── Helpers ──────────────────────────────────────────────────────────────
   /// Gets adaptive colors based on brightness
   static Color bg(BuildContext context) =>
-      Theme.of(context).brightness == Brightness.dark ? backgroundDark : backgroundLight;
+      Theme.of(context).brightness == Brightness.dark
+          ? backgroundDark
+          : backgroundLight;
   static Color surface(BuildContext context) =>
-      Theme.of(context).brightness == Brightness.dark ? surfaceDark : surfaceLight;
+      Theme.of(context).brightness == Brightness.dark
+          ? surfaceDark
+          : surfaceLight;
   static Color card(BuildContext context) =>
       Theme.of(context).brightness == Brightness.dark ? cardDark : cardLight;
   static Color border(BuildContext context) =>
-      Theme.of(context).brightness == Brightness.dark ? borderDark : borderLight;
+      Theme.of(context).brightness == Brightness.dark
+          ? borderDark
+          : borderLight;
   static Color textP(BuildContext context) =>
-      Theme.of(context).brightness == Brightness.dark ? textPrimary : textPrimaryLight;
+      Theme.of(context).brightness == Brightness.dark
+          ? textPrimary
+          : textPrimaryLight;
   static Color textS(BuildContext context) =>
-      Theme.of(context).brightness == Brightness.dark ? textSecondary : textSecondaryLight;
+      Theme.of(context).brightness == Brightness.dark
+          ? textSecondary
+          : textSecondaryLight;
   static Color textH(BuildContext context) =>
-      Theme.of(context).brightness == Brightness.dark ? textHint : textHintLight;
+      Theme.of(context).brightness == Brightness.dark
+          ? textHint
+          : textHintLight;
 
   // ─── Dark Theme ───────────────────────────────────────────────────────────
   static ThemeData get dark {
@@ -90,7 +102,9 @@ class AppTheme {
         centerTitle: false,
         iconTheme: const IconThemeData(color: textPrimary),
         titleTextStyle: GoogleFonts.poppins(
-          fontSize: 20, fontWeight: FontWeight.w600, color: textPrimary,
+          fontSize: 20,
+          fontWeight: FontWeight.w600,
+          color: textPrimary,
         ),
       ),
       cardTheme: CardThemeData(
@@ -154,7 +168,9 @@ class AppTheme {
         centerTitle: false,
         iconTheme: const IconThemeData(color: textPrimaryLight),
         titleTextStyle: GoogleFonts.poppins(
-          fontSize: 20, fontWeight: FontWeight.w600, color: textPrimaryLight,
+          fontSize: 20,
+          fontWeight: FontWeight.w600,
+          color: textPrimaryLight,
         ),
       ),
       cardTheme: CardThemeData(
@@ -173,7 +189,8 @@ class AppTheme {
       chipTheme: ChipThemeData(
         backgroundColor: cardLight,
         selectedColor: primary.withValues(alpha: 0.15),
-        labelStyle: GoogleFonts.poppins(fontSize: 12, color: textSecondaryLight),
+        labelStyle:
+            GoogleFonts.poppins(fontSize: 12, color: textSecondaryLight),
         side: const BorderSide(color: borderLight),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
@@ -188,7 +205,8 @@ class AppTheme {
       dividerTheme: const DividerThemeData(color: borderLight, thickness: 0.5),
       snackBarTheme: SnackBarThemeData(
         backgroundColor: cardLight,
-        contentTextStyle: GoogleFonts.poppins(color: textPrimaryLight, fontSize: 14),
+        contentTextStyle:
+            GoogleFonts.poppins(color: textPrimaryLight, fontSize: 14),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         behavior: SnackBarBehavior.floating,
       ),
@@ -202,19 +220,32 @@ class AppTheme {
     final ts = isDark ? textSecondary : textSecondaryLight;
     final th = isDark ? textHint : textHintLight;
     return GoogleFonts.poppinsTextTheme().copyWith(
-      displayLarge: GoogleFonts.poppins(fontSize: 32, fontWeight: FontWeight.w700, color: tp),
-      displayMedium: GoogleFonts.poppins(fontSize: 28, fontWeight: FontWeight.w700, color: tp),
-      headlineLarge: GoogleFonts.poppins(fontSize: 24, fontWeight: FontWeight.w600, color: tp),
-      headlineMedium: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.w600, color: tp),
-      headlineSmall: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w600, color: tp),
-      titleLarge: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w600, color: tp),
-      titleMedium: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w500, color: tp),
-      bodyLarge: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w400, color: tp),
-      bodyMedium: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w400, color: ts),
-      bodySmall: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.w400, color: th),
-      labelLarge: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w600, color: tp),
-      labelMedium: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.w500, color: ts),
-      labelSmall: GoogleFonts.poppins(fontSize: 11, fontWeight: FontWeight.w500, color: th),
+      displayLarge: GoogleFonts.poppins(
+          fontSize: 32, fontWeight: FontWeight.w700, color: tp),
+      displayMedium: GoogleFonts.poppins(
+          fontSize: 28, fontWeight: FontWeight.w700, color: tp),
+      headlineLarge: GoogleFonts.poppins(
+          fontSize: 24, fontWeight: FontWeight.w600, color: tp),
+      headlineMedium: GoogleFonts.poppins(
+          fontSize: 20, fontWeight: FontWeight.w600, color: tp),
+      headlineSmall: GoogleFonts.poppins(
+          fontSize: 18, fontWeight: FontWeight.w600, color: tp),
+      titleLarge: GoogleFonts.poppins(
+          fontSize: 16, fontWeight: FontWeight.w600, color: tp),
+      titleMedium: GoogleFonts.poppins(
+          fontSize: 14, fontWeight: FontWeight.w500, color: tp),
+      bodyLarge: GoogleFonts.poppins(
+          fontSize: 16, fontWeight: FontWeight.w400, color: tp),
+      bodyMedium: GoogleFonts.poppins(
+          fontSize: 14, fontWeight: FontWeight.w400, color: ts),
+      bodySmall: GoogleFonts.poppins(
+          fontSize: 12, fontWeight: FontWeight.w400, color: th),
+      labelLarge: GoogleFonts.poppins(
+          fontSize: 14, fontWeight: FontWeight.w600, color: tp),
+      labelMedium: GoogleFonts.poppins(
+          fontSize: 12, fontWeight: FontWeight.w500, color: ts),
+      labelSmall: GoogleFonts.poppins(
+          fontSize: 11, fontWeight: FontWeight.w500, color: th),
     );
   }
 
@@ -249,8 +280,10 @@ class AppTheme {
           backgroundColor: primary,
           foregroundColor: Colors.white,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-          textStyle: GoogleFonts.poppins(fontSize: 15, fontWeight: FontWeight.w600),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+          textStyle:
+              GoogleFonts.poppins(fontSize: 15, fontWeight: FontWeight.w600),
           elevation: 0,
         ),
       );
@@ -261,16 +294,18 @@ class AppTheme {
           foregroundColor: primary,
           side: const BorderSide(color: primary),
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-          textStyle: GoogleFonts.poppins(fontSize: 15, fontWeight: FontWeight.w600),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+          textStyle:
+              GoogleFonts.poppins(fontSize: 15, fontWeight: FontWeight.w600),
         ),
       );
 
-  static TextButtonThemeData _buildTextButtonTheme() =>
-      TextButtonThemeData(
+  static TextButtonThemeData _buildTextButtonTheme() => TextButtonThemeData(
         style: TextButton.styleFrom(
           foregroundColor: primary,
-          textStyle: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w500),
+          textStyle:
+              GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w500),
         ),
       );
 }

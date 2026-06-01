@@ -44,7 +44,8 @@ class _RecipeDetailPageState extends State<RecipeDetailPage>
     try {
       final items = sl<FridgeLocalDataSource>().getAll();
       setState(() {
-        _fridgeIngredientNames = items.map((e) => e.name.toLowerCase()).toList();
+        _fridgeIngredientNames =
+            items.map((e) => e.name.toLowerCase()).toList();
       });
     } catch (_) {}
   }
@@ -91,8 +92,11 @@ class _RecipeDetailPageState extends State<RecipeDetailPage>
         children: [
           const Icon(Icons.error_outline, color: AppTheme.error, size: 48),
           const SizedBox(height: 12),
-          Text('Could not load recipe', style: TextStyle(color: AppTheme.textS(context))),
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Go Back')),
+          Text('Could not load recipe',
+              style: TextStyle(color: AppTheme.textS(context))),
+          TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Go Back')),
         ],
       ),
     );
@@ -120,7 +124,8 @@ class _RecipeDetailPageState extends State<RecipeDetailPage>
           actions: [
             BlocBuilder<SavedRecipesCubit, List<MealEntity>>(
               builder: (context, saved) {
-                final isSaved = context.read<SavedRecipesCubit>().isSaved(meal.id);
+                final isSaved =
+                    context.read<SavedRecipesCubit>().isSaved(meal.id);
                 return IconButton(
                   icon: Container(
                     padding: const EdgeInsets.all(6),
@@ -129,11 +134,14 @@ class _RecipeDetailPageState extends State<RecipeDetailPage>
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Icon(
-                      isSaved ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                      isSaved
+                          ? Icons.favorite_rounded
+                          : Icons.favorite_border_rounded,
                       color: isSaved ? AppTheme.error : Colors.white,
                     ),
                   ),
-                  onPressed: () => context.read<SavedRecipesCubit>().toggleSave(meal),
+                  onPressed: () =>
+                      context.read<SavedRecipesCubit>().toggleSave(meal),
                 );
               },
             ),
@@ -174,10 +182,15 @@ class _RecipeDetailPageState extends State<RecipeDetailPage>
                   spacing: 8,
                   runSpacing: 6,
                   children: [
-                    if (meal.category != null) _buildTag(meal.category!, Icons.category_rounded, AppTheme.primary),
-                    if (meal.area != null) _buildTag(meal.area!, Icons.location_on_rounded, AppTheme.secondary),
+                    if (meal.category != null)
+                      _buildTag(meal.category!, Icons.category_rounded,
+                          AppTheme.primary),
+                    if (meal.area != null)
+                      _buildTag(meal.area!, Icons.location_on_rounded,
+                          AppTheme.secondary),
                     if (meal.ingredients.isNotEmpty)
-                      _buildTag('${meal.ingredients.length} ingredients', Icons.kitchen_rounded, AppTheme.warning),
+                      _buildTag('${meal.ingredients.length} ingredients',
+                          Icons.kitchen_rounded, AppTheme.warning),
                   ],
                 ).animate().fadeIn(duration: 400.ms, delay: 100.ms),
                 if (meal.youtubeUrl != null && meal.youtubeUrl!.isNotEmpty) ...[
@@ -185,9 +198,12 @@ class _RecipeDetailPageState extends State<RecipeDetailPage>
                   OutlinedButton.icon(
                     onPressed: () async {
                       final uri = Uri.tryParse(meal.youtubeUrl!);
-                      if (uri != null) await launchUrl(uri, mode: LaunchMode.externalApplication);
+                      if (uri != null)
+                        await launchUrl(uri,
+                            mode: LaunchMode.externalApplication);
                     },
-                    icon: const Icon(Icons.play_circle_rounded, color: Color(0xFFFF0000)),
+                    icon: const Icon(Icons.play_circle_rounded,
+                        color: Color(0xFFFF0000)),
                     label: const Text('Watch Tutorial'),
                   ),
                 ],
@@ -201,7 +217,8 @@ class _RecipeDetailPageState extends State<RecipeDetailPage>
                   child: TabBar(
                     controller: _tabController,
                     indicatorSize: TabBarIndicatorSize.tab,
-                    indicatorPadding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+                    indicatorPadding:
+                        const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
                     indicator: BoxDecoration(
                       color: AppTheme.primary,
                       borderRadius: BorderRadius.circular(8),
@@ -226,7 +243,8 @@ class _RecipeDetailPageState extends State<RecipeDetailPage>
           child: TabBarView(
             controller: _tabController,
             children: [
-              _IngredientsTab(meal: meal, fridgeIngredients: _fridgeIngredientNames),
+              _IngredientsTab(
+                  meal: meal, fridgeIngredients: _fridgeIngredientNames),
               _InstructionsTab(meal: meal),
               _NutritionTab(meal: meal),
             ],
@@ -249,7 +267,9 @@ class _RecipeDetailPageState extends State<RecipeDetailPage>
         children: [
           Icon(icon, size: 12, color: color),
           const SizedBox(width: 4),
-          Text(text, style: TextStyle(color: color, fontSize: 12, fontWeight: FontWeight.w500)),
+          Text(text,
+              style: TextStyle(
+                  color: color, fontSize: 12, fontWeight: FontWeight.w500)),
         ],
       ),
     );
@@ -272,10 +292,10 @@ class _IngredientsTab extends StatelessWidget {
       itemBuilder: (_, i) {
         final ing = pairs[i];
         final ingNameLower = ing.key.toLowerCase();
-        
+
         // Simple matching logic
-        final isMissing = !fridgeIngredients.any((f) => 
-            ingNameLower.contains(f) || f.contains(ingNameLower));
+        final isMissing = !fridgeIngredients
+            .any((f) => ingNameLower.contains(f) || f.contains(ingNameLower));
 
         return Container(
           margin: const EdgeInsets.only(bottom: 8),
@@ -291,16 +311,17 @@ class _IngredientsTab extends StatelessWidget {
                 width: 36,
                 height: 36,
                 decoration: BoxDecoration(
-                  color: isMissing 
-                      ? AppTheme.textHint.withValues(alpha: 0.1) 
+                  color: isMissing
+                      ? AppTheme.textHint.withValues(alpha: 0.1)
                       : AppTheme.success.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(
-                  isMissing ? Icons.cancel_outlined : Icons.check_circle_outline_rounded,
-                  color: isMissing ? AppTheme.textHint : AppTheme.success, 
-                  size: 18
-                ),
+                    isMissing
+                        ? Icons.cancel_outlined
+                        : Icons.check_circle_outline_rounded,
+                    color: isMissing ? AppTheme.textHint : AppTheme.success,
+                    size: 18),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -313,7 +334,8 @@ class _IngredientsTab extends StatelessWidget {
                         color: AppTheme.textP(context),
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
-                        decoration: isMissing ? TextDecoration.lineThrough : null,
+                        decoration:
+                            isMissing ? TextDecoration.lineThrough : null,
                       ),
                     ),
                     if (isMissing)
@@ -349,7 +371,8 @@ class _InstructionsTab extends StatelessWidget {
   Widget build(BuildContext context) {
     if (meal.instructions == null || meal.instructions!.trim().isEmpty) {
       return Center(
-        child: Text('No instructions available', style: TextStyle(color: AppTheme.textS(context))),
+        child: Text('No instructions available',
+            style: TextStyle(color: AppTheme.textS(context))),
       );
     }
     final steps = meal.instructions!
@@ -419,10 +442,18 @@ class _NutritionTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final items = [
-      _NutritionItem('Calories', '$_estCalories kcal', Icons.local_fire_department_rounded, AppTheme.primary, _estCalories / 900),
-      _NutritionItem('Protein', '${_estProtein}g', Icons.fitness_center_rounded, AppTheme.secondary, _estProtein / 60),
-      _NutritionItem('Carbs', '${_estCarbs}g', Icons.grain_rounded, AppTheme.warning, _estCarbs / 120),
-      _NutritionItem('Fat', '${_estFat}g', Icons.opacity_rounded, const Color(0xFF9B59B6), _estFat / 40),
+      _NutritionItem(
+          'Calories',
+          '$_estCalories kcal',
+          Icons.local_fire_department_rounded,
+          AppTheme.primary,
+          _estCalories / 900),
+      _NutritionItem('Protein', '${_estProtein}g', Icons.fitness_center_rounded,
+          AppTheme.secondary, _estProtein / 60),
+      _NutritionItem('Carbs', '${_estCarbs}g', Icons.grain_rounded,
+          AppTheme.warning, _estCarbs / 120),
+      _NutritionItem('Fat', '${_estFat}g', Icons.opacity_rounded,
+          const Color(0xFF9B59B6), _estFat / 40),
     ];
 
     return Padding(
@@ -435,29 +466,36 @@ class _NutritionTab extends StatelessWidget {
             decoration: BoxDecoration(
               color: AppTheme.warning.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: AppTheme.warning.withValues(alpha: 0.3)),
+              border:
+                  Border.all(color: AppTheme.warning.withValues(alpha: 0.3)),
             ),
             child: Row(
               children: [
-                Icon(Icons.info_outline_rounded, color: AppTheme.warning, size: 18),
+                Icon(Icons.info_outline_rounded,
+                    color: AppTheme.warning, size: 18),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     'Estimated values based on ingredients count.',
-                    style: TextStyle(color: AppTheme.textS(context), fontSize: 12),
+                    style:
+                        TextStyle(color: AppTheme.textS(context), fontSize: 12),
                   ),
                 ),
               ],
             ),
           ),
           const SizedBox(height: 20),
-          ...items.asMap().entries.map((e) => _buildNutritionRow(context, e.value, e.key)),
+          ...items
+              .asMap()
+              .entries
+              .map((e) => _buildNutritionRow(context, e.value, e.key)),
         ],
       ),
     );
   }
 
-  Widget _buildNutritionRow(BuildContext context, _NutritionItem item, int index) {
+  Widget _buildNutritionRow(
+      BuildContext context, _NutritionItem item, int index) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
@@ -486,9 +524,15 @@ class _NutritionTab extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(item.label,
-                        style: TextStyle(color: AppTheme.textP(context), fontSize: 14, fontWeight: FontWeight.w500)),
+                        style: TextStyle(
+                            color: AppTheme.textP(context),
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500)),
                     Text(item.value,
-                        style: TextStyle(color: item.color, fontSize: 14, fontWeight: FontWeight.w600)),
+                        style: TextStyle(
+                            color: item.color,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600)),
                   ],
                 ),
                 const SizedBox(height: 6),
@@ -519,5 +563,6 @@ class _NutritionItem {
   final IconData icon;
   final Color color;
   final double percent;
-  const _NutritionItem(this.label, this.value, this.icon, this.color, this.percent);
+  const _NutritionItem(
+      this.label, this.value, this.icon, this.color, this.percent);
 }

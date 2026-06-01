@@ -46,7 +46,11 @@ class MealEntity extends Equatable {
 
   List<String> get tagList {
     if (tags == null || tags!.isEmpty) return [];
-    return tags!.split(',').map((t) => t.trim()).where((t) => t.isNotEmpty).toList();
+    return tags!
+        .split(',')
+        .map((t) => t.trim())
+        .where((t) => t.isNotEmpty)
+        .toList();
   }
 
   @override

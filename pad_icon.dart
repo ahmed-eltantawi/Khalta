@@ -1,1 +1,17 @@
-import 'dart:io';import 'package:image/image.dart';void main() { final bytes = File('assets/images/app_icon.png').readAsBytesSync(); final img = decodeImage(bytes); if (img == null) return; final bgPixel = img.getPixel(0, 0); final pad = (img.width * 0.3).toInt(); final newWidth = img.width + pad * 2; final newHeight = img.height + pad * 2; final newImg = Image(width: newWidth, height: newHeight); fill(newImg, color: bgPixel); compositeImage(newImg, img, dstX: pad, dstY: pad); File('assets/images/app_icon_padded.png').writeAsBytesSync(encodePng(newImg)); print('Padded image created.'); }
+import 'dart:io';
+import 'package:image/image.dart';
+
+void main() {
+  final bytes = File('assets/images/app_icon.png').readAsBytesSync();
+  final img = decodeImage(bytes);
+  if (img == null) return;
+  final bgPixel = img.getPixel(0, 0);
+  final pad = (img.width * 0.3).toInt();
+  final newWidth = img.width + pad * 2;
+  final newHeight = img.height + pad * 2;
+  final newImg = Image(width: newWidth, height: newHeight);
+  fill(newImg, color: bgPixel);
+  compositeImage(newImg, img, dstX: pad, dstY: pad);
+  File('assets/images/app_icon_padded.png').writeAsBytesSync(encodePng(newImg));
+  print('Padded image created.');
+}

@@ -213,8 +213,8 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
         ));
       }
     } catch (e) {
-      emit(SearchError(e.toString(),
-          selectedIngredients: _selectedIngredients));
+      emit(
+          SearchError(e.toString(), selectedIngredients: _selectedIngredients));
     }
   }
 
@@ -268,11 +268,8 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
     // If the user types something like "chicken, tomato" we detect the comma
     // and add each segment as a chip.
     if (q.contains(',')) {
-      final parts = q
-          .split(',')
-          .map((s) => s.trim())
-          .where((s) => s.isNotEmpty)
-          .toList();
+      final parts =
+          q.split(',').map((s) => s.trim()).where((s) => s.isNotEmpty).toList();
 
       final matched = <String>[];
       for (final part in parts) {
@@ -285,7 +282,9 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
             orElse: () => '',
           ),
         );
-        if (match.isNotEmpty && !_selectedIngredients.contains(match) && !matched.contains(match)) {
+        if (match.isNotEmpty &&
+            !_selectedIngredients.contains(match) &&
+            !matched.contains(match)) {
           matched.add(match);
         } else if (match.isEmpty && part.isNotEmpty) {
           // Even if not in the known list, add as-is (the API might still find results)
@@ -344,8 +343,8 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
         ));
       }
     } catch (e) {
-      emit(SearchError(e.toString(),
-          selectedIngredients: _selectedIngredients));
+      emit(
+          SearchError(e.toString(), selectedIngredients: _selectedIngredients));
     }
   }
 

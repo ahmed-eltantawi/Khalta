@@ -7,12 +7,15 @@ import '../../../../features/search/domain/usecases/meal_usecases.dart';
 abstract class HomeCubitState {}
 
 class HomeInitial extends HomeCubitState {}
+
 class HomeLoading extends HomeCubitState {}
+
 class HomeLoaded extends HomeCubitState {
   final List<MealEntity> randomMeals;
   final List<dynamic> categories;
   HomeLoaded({required this.randomMeals, required this.categories});
 }
+
 class HomeError extends HomeCubitState {
   final String message;
   HomeError(this.message);
