@@ -33,7 +33,7 @@ By integrating **Google's Gemini AI**, the application analyzes the available in
 
 <p align="center">
 
-https://github.com/user-attachments/assets/YOUR_VIDEO_ID_HERE
+[https://github.com/user-attachments/assets/YOUR_VIDEO_ID_HERE](https://github.com/user-attachments/assets/7bb8679d-0127-4b04-b605-b6ffee916355)
 
 <!-- Or use an image link to YouTube: -->
 <!-- [![Zikola Demo](https://img.youtube.com/vi/YOUR_VIDEO_ID/maxresdefault.jpg)](https://www.youtube.com/watch?v=YOUR_VIDEO_ID) -->
