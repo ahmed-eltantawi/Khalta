@@ -1,17 +1,17 @@
 import 'dart:io';
 import 'package:google_generative_ai/google_generative_ai.dart';
-import '../../../../core/constants/api_constants.dart';
+import '../../../../core/services/gemini_service.dart';
 
 class DetectIngredientsFromImage {
-  Future<List<String>> call(String imagePath) async {
+  final GeminiService _geminiService;
+
+  DetectIngredientsFromImage(this._geminiService);
+
+  Future<List<String>> call(String imagePath, {Function(int)? onRetry}) async {
     try {
       final file = File(imagePath);
       final bytes = await file.readAsBytes();
 
-      final model = GenerativeModel(
-        model: 'gemini-2.5-flash',
-        apiKey: ApiConstants.geminiApiKey,
-      );
 
       final prompt = TextPart(
           'Identify the raw food ingredients in this image. '
@@ -23,11 +23,11 @@ class DetectIngredientsFromImage {
       final mime = ext == 'png' ? 'image/png' : 'image/jpeg';
       final imagePart = DataPart(mime, bytes);
 
-      final response = await model.generateContent([
-        Content.multi([prompt, imagePart])
-      ]);
+      final text = await _geminiService.generateContentWithRetry(
+        promptParts: [prompt, imagePart],
+        onRetry: onRetry,
+      );
 
-      final text = response.text?.trim() ?? '';
       if (text.isEmpty) return [];
 
       final ingredients = text

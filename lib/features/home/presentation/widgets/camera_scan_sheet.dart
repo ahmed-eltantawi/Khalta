@@ -108,6 +108,9 @@ class _CameraScanSheetState extends State<CameraScanSheet> {
           if (state is CameraScanning) {
             return _buildScanningView(context);
           }
+          if (state is CameraRetrying) {
+            return _buildScanningView(context, isRetrying: true, attempt: state.attempt);
+          }
           if (state is CameraIngredientConfirmation) {
             return _buildConfirmationView(context, state, isDark);
           }
@@ -120,15 +123,30 @@ class _CameraScanSheetState extends State<CameraScanSheet> {
 
   // ── Scanning spinner ──────────────────────────────────────────────────────
 
-  Widget _buildScanningView(BuildContext context) {
+  Widget _buildScanningView(BuildContext context, {bool isRetrying = false, int attempt = 0}) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const CircularProgressIndicator(color: AppTheme.primary),
+          CircularProgressIndicator(
+            color: isRetrying ? AppTheme.warning : AppTheme.primary,
+          ),
           const SizedBox(height: 16),
-          Text('Analyzing image…',
-              style: TextStyle(color: AppTheme.textP(context), fontSize: 16)),
+          Text(
+            isRetrying ? 'AI service is temporarily busy. Retrying...' : 'Analyzing image…',
+            style: TextStyle(
+              color: isRetrying ? AppTheme.warning : AppTheme.textP(context), 
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          if (isRetrying) ...[
+            const SizedBox(height: 8),
+            Text(
+              'Attempt $attempt',
+              style: TextStyle(color: AppTheme.textS(context), fontSize: 14),
+            ),
+          ],
         ],
       ),
     );

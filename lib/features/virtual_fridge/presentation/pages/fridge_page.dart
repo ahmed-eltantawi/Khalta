@@ -14,6 +14,8 @@ import '../../../../features/search/presentation/widgets/meal_card.dart';
 import '../../../../features/search/domain/usecases/meal_usecases.dart';
 import '../../../../core/widgets/app_widgets.dart';
 import '../../../../features/home/presentation/cubits/camera_cubit.dart';
+import '../../../../features/home/presentation/cubits/receipt_scan_cubit.dart';
+import '../../../../features/home/presentation/widgets/receipt_scan_tab.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 class FridgePage extends StatefulWidget {
@@ -29,7 +31,7 @@ class _FridgePageState extends State<FridgePage>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
   }
 
   @override
@@ -81,12 +83,15 @@ class _FridgePageState extends State<FridgePage>
                     color: AppTheme.primary,
                     borderRadius: BorderRadius.circular(8)),
                 labelColor: Colors.white,
-                labelPadding: const EdgeInsets.symmetric(horizontal: 24),
+                labelPadding: const EdgeInsets.symmetric(horizontal: 10),
                 unselectedLabelColor: AppTheme.textS(context),
                 dividerColor: Colors.transparent,
+                labelStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+                unselectedLabelStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
                 tabs: const [
                   Tab(text: 'My Items'),
                   Tab(text: '📷 Scan Photo'),
+                  Tab(text: '📋 Scan Receipt'),
                 ],
               ),
             ),
@@ -101,6 +106,11 @@ class _FridgePageState extends State<FridgePage>
                     create: (_) => sl<CameraCubit>(),
                     child: _ScanPhotoTab(
                         onIngredientAdded: () => _tabController.animateTo(0)),
+                  ),
+                  BlocProvider(
+                    create: (_) => sl<ReceiptScanCubit>(),
+                    child: ReceiptScanTab(
+                        onIngredientsAdded: () => _tabController.animateTo(0)),
                   ),
                 ],
               ),

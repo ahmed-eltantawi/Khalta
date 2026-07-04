@@ -1,11 +1,17 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../domain/usecases/detect_ingredients_from_image.dart';
+import '../../../../core/error/exceptions.dart';
 
 abstract class CameraCubitState {}
 
 class CameraIdle extends CameraCubitState {}
 
 class CameraScanning extends CameraCubitState {}
+
+class CameraRetrying extends CameraCubitState {
+  final int attempt;
+  CameraRetrying(this.attempt);
+}
 
 /// Emitted after detection — presents one ingredient at a time for confirmation.
 class CameraIngredientConfirmation extends CameraCubitState {
@@ -64,7 +70,10 @@ class CameraCubit extends Cubit<CameraCubitState> {
     emit(CameraScanning());
     _imagePath = path;
     try {
-      final ingredients = await detectIngredients(path);
+      final ingredients = await detectIngredients(
+        path,
+        onRetry: (attempt) => emit(CameraRetrying(attempt)),
+      );
       if (ingredients.isEmpty) {
         // If nothing is detected, instead of failing, provide an empty string
         // so the user can still add an item manually via the confirmation UI.
@@ -78,6 +87,10 @@ class CameraCubit extends Cubit<CameraCubitState> {
       _pendingIngredients = ingredients.toList();
       _acceptedIngredients = [];
       _showNextConfirmation();
+    } on TransientGeminiException catch (e) {
+      emit(CameraError(e.message));
+    } on PermanentGeminiException catch (e) {
+      emit(CameraError(e.message));
     } catch (e) {
       emit(CameraError('Failed to analyze image: $e'));
     }

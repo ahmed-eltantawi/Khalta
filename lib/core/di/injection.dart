@@ -1,6 +1,7 @@
 import 'package:get_it/get_it.dart';
 import 'package:dio/dio.dart';
 import '../network/dio_client.dart';
+import '../services/gemini_service.dart';
 
 // Features - Search
 import '../../features/search/data/datasources/meal_remote_datasource.dart';
@@ -23,8 +24,10 @@ import '../../features/home/presentation/cubits/home_cubit.dart';
 
 // Features - Home
 import '../../features/home/domain/usecases/detect_ingredients_from_image.dart';
+import '../../features/home/domain/usecases/extract_ingredients_from_receipt.dart';
 import '../../features/home/presentation/cubits/camera_cubit.dart';
 import '../../features/home/presentation/cubits/voice_cubit.dart';
+import '../../features/home/presentation/cubits/receipt_scan_cubit.dart';
 
 final sl = GetIt.instance;
 
@@ -58,7 +61,11 @@ Future<void> initDependencies() async {
       () => FilterMealsByIngredients(sl<MealRepository>()));
   sl.registerLazySingleton(() => GetAllIngredients(sl<MealRepository>()));
 
-  sl.registerLazySingleton(() => DetectIngredientsFromImage());
+  // ── Services ──────────────────────────────────────────────────────────────
+  sl.registerLazySingleton(() => GeminiService());
+
+  sl.registerLazySingleton(() => DetectIngredientsFromImage(sl<GeminiService>()));
+  sl.registerLazySingleton(() => ExtractIngredientsFromReceipt(sl<GeminiService>()));
 
   // ── BLoCs / Cubits ────────────────────────────────────────────────────────
   sl.registerFactory(() => HomeCubit(
@@ -68,6 +75,7 @@ Future<void> initDependencies() async {
 
   sl.registerFactory(() => CameraCubit(sl<DetectIngredientsFromImage>()));
   sl.registerFactory(() => VoiceCubit());
+  sl.registerFactory(() => ReceiptScanCubit(sl<ExtractIngredientsFromReceipt>()));
 
   sl.registerFactory(() => SearchBloc(
         searchMealsByName: sl<SearchMealsByName>(),
